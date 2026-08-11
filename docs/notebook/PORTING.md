@@ -60,3 +60,57 @@ runs) is architecture-independent and travels with the port.
 What does NOT travel: the PIE kernels themselves, the dual-core split
 geometry (tuned to this chip's 128 KB L2 — see bench/gemm/README), and any
 timing number in README.md. A port re-earns its numbers.
+
+## Hardware constraints (measured, binding)
+
+- **`esp.vld.128` requires 16-byte alignment** — it mis-loads *silently*
+  otherwise; use `heap_caps_aligned_alloc(16, ...)` for anything the vector
+  unit reads.
+- **IDF 5.4.2's lazy PIE context save is broken** (`portasm.S` skips `q3`),
+  so inference runs with the scheduler suspended, per vector burst.
+- A second core adds ~1.3× aggregate PSRAM bandwidth, not 2× (`bench/dualcore/`).
+- Flash is 32 MB (GigaDevice; needs `CONFIG_SPI_FLASH_SUPPORT_GD_CHIP=y`);
+  PSRAM runs at 200 MHz only behind `CONFIG_IDF_EXPERIMENTAL_FEATURES=y`.
+- Flashing another IDF project replaces the partition table and orphans the
+  weights blob; full `idf.py flash` restores it.
+
+## Model semantics that break naive ports
+
+All verified against the reference. The first three produce wrong output rather
+than a crash:
+
+1. Cross-attention gets **no** RoPE; every other attention path does.
+2. Per-head q/k norms come **before** the GQA repeat, before RoPE.
+3. Norm weights apply as `(1 + w)`; residual gates as `sigmoid(g)`.
+4. RoPE is half-split (dims 0–31 against 32–63), theta 10000.
+5. Embedding lookups scale by `sqrt(512)` on encoder and decoder.
+6. The embedding is tied and stored once: encoder input, decoder input, and
+   (transposed) the output projection.
+7. The encoder has a final norm; the decoder has its own, before logits.
+8. Upstream `encode()` returns a *tuple* of (output, mask).
+
+## Limitations
+
+- **Eight fixtures are a smoke test, not a benchmark.** They prove the port
+  reproduces the reference; they say little about model quality.
+- One user at a time: inference holds the CPU per vector burst; this is not a
+  server.
+- Tokenization is not on the chip — the board speaks token ids; the tokenizer
+  runs in the browser or on the host, both gated against the oracle.
+- `NE_MAX_ENC` is 384 tokens and `NE_MAX_GEN` 64, compile-time.
+- The engine holds one model in file-scope state; not reentrant.
+- The fixtures record what the *model* does, quirks included — one fixture
+  answers `"mains power"` where the tool wants `"mains"`.
+- The parity oracle uses group-32 fake-quantized weights while the shipped
+  artifact is group-512: the board is scored against a slightly stricter
+  reference than itself.
+
+## Attribution and license
+
+MIT, see `LICENSE`; third-party notices in `THIRD_PARTY_NOTICES.md`; weight
+provenance and licenses in `WEIGHTS.md`.
+
+The Needle model, reference implementation and vocabulary are the work of
+[Cactus Compute](https://github.com/cactus-compute/needle) (MIT).
+`tokenizer/vocab.txt` derives from theirs. This is an independent port, not
+affiliated with or endorsed by them.

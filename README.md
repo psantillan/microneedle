@@ -10,20 +10,20 @@ the browser executes it. Routing is a measured copy mechanism: rename a tool
 in the schema and the model emits the new name.
 
 The model is [Cactus Compute's Needle](https://github.com/cactus-compute/needle),
-the 26M "v3" checkpoint (upstream commit ffb1c51). It is an encoder-decoder with 12 encoder layers,
+the 26M "v3" checkpoint. It is an encoder-decoder with 12 encoder layers,
 8 decoder layers, `d_model` 512, and no feed-forward network. That is why
 26M parameters fit in 14.66 MiB.
 This repository is an independent C99 + RISC-V vector-assembly port of its
 forward pass, the firmware that serves it, and the measurement harness.
 
-## Results (shipped configuration, measured on the board)
+## Results
 
 | | |
 |---|---|
 | Demo round trip, retrieval-pruned prompt | **2.81 s** |
 | Full six-tool prompt | 5.81 s cold, **5.6 s** with the warm schema cache |
-| Prefill, 271 tokens | 5.41 s ("prefill" = reading the prompt before the first output token) |
-| Decode | **9–11 tokens/s** (89–108 ms/token) |
+| Prefill, 271 tokens | 5.41 s |
+| Decode | **9–11 tokens/s** |
 | Weights resident | **14.66 MiB** (int4 projections, int8 embedding) |
 | Reference config (int16) | prefill 0.38 s @22 / 0.73 s @48 / 5.9 s @271 tokens, **8/8 fixtures token-identical** |
 
@@ -56,8 +56,8 @@ Release download needs nothing.
 
 ## Quickstart, with the board
 
-You need a Waveshare **ESP32-P4-WIFI6-POE-ETH** (dual RISC-V @ 360 MHz, 32 MB
-flash, 32 MB PSRAM), ESP-IDF 5.4.2, and Ethernet.
+You need a Waveshare **ESP32-P4-WIFI6-POE-ETH** board, ESP-IDF 5.4.2, and
+Ethernet.
 
 ```
 . $IDF_PATH/export.sh
@@ -66,7 +66,7 @@ esptool.py --chip esp32p4 -p /dev/ttyACM1 -b 921600 \
     write_flash 0x210000 ../weights/needle_runa_g512.npk    # the demo model, ~4 min
 ```
 
-Open `http://<board-ip>/` (the boot log prints the address) and ask it
+Open the address the boot log prints and ask it
 something. The page, tokenizer and vocabulary are served from the board's
 flash; weather comes from wttr.in, lookups from Wikipedia, and one tool
 reports the board's own uptime.
@@ -132,56 +132,3 @@ template.
 | `bench/` | Standalone measurements. Each subdirectory's README carries its numbers. |
 | `docs/` | `docs/notebook/` (the engineering log), `docs/finetuning.md`, `docs/HEADS.md`. |
 
-## Hardware constraints (measured, binding)
-
-- **`esp.vld.128` requires 16-byte alignment** — it mis-loads *silently*
-  otherwise; use `heap_caps_aligned_alloc(16, ...)` for anything the vector
-  unit reads.
-- **IDF 5.4.2's lazy PIE context save is broken** (`portasm.S` skips `q3`),
-  so inference runs with the scheduler suspended, per vector burst.
-- A second core adds ~1.3× aggregate PSRAM bandwidth, not 2× (`bench/dualcore/`).
-- Flash is 32 MB (GigaDevice; needs `CONFIG_SPI_FLASH_SUPPORT_GD_CHIP=y`);
-  PSRAM runs at 200 MHz only behind `CONFIG_IDF_EXPERIMENTAL_FEATURES=y`.
-- Flashing another IDF project replaces the partition table and orphans the
-  weights blob; full `idf.py flash` restores it.
-
-## Model semantics that break naive ports
-
-All verified against the reference. The first three produce wrong output rather
-than a crash:
-
-1. Cross-attention gets **no** RoPE; every other attention path does.
-2. Per-head q/k norms come **before** the GQA repeat, before RoPE.
-3. Norm weights apply as `(1 + w)`; residual gates as `sigmoid(g)`.
-4. RoPE is half-split (dims 0–31 against 32–63), theta 10000.
-5. Embedding lookups scale by `sqrt(512)` on encoder and decoder.
-6. The embedding is tied and stored once: encoder input, decoder input, and
-   (transposed) the output projection.
-7. The encoder has a final norm; the decoder has its own, before logits.
-8. Upstream `encode()` returns a *tuple* of (output, mask).
-
-## Limitations
-
-- **Eight fixtures are a smoke test, not a benchmark.** They prove the port
-  reproduces the reference; they say little about model quality.
-- One user at a time: inference holds the CPU per vector burst; this is not a
-  server.
-- Tokenization is not on the chip — the board speaks token ids; the tokenizer
-  runs in the browser or on the host, both gated against the oracle.
-- `NE_MAX_ENC` is 384 tokens and `NE_MAX_GEN` 64, compile-time.
-- The engine holds one model in file-scope state; not reentrant.
-- The fixtures record what the *model* does, quirks included — one fixture
-  answers `"mains power"` where the tool wants `"mains"`.
-- The parity oracle uses group-32 fake-quantized weights while the shipped
-  artifact is group-512: the board is scored against a slightly stricter
-  reference than itself.
-
-## Attribution and license
-
-MIT, see `LICENSE`; third-party notices in `THIRD_PARTY_NOTICES.md`; weight
-provenance and licenses in `WEIGHTS.md`.
-
-The Needle model, reference implementation and vocabulary are the work of
-[Cactus Compute](https://github.com/cactus-compute/needle) (MIT).
-`tokenizer/vocab.txt` derives from theirs. This is an independent port, not
-affiliated with or endorsed by them.
