@@ -1,0 +1,7 @@
+# factory app + raw weights region. The .npk is written with esptool at 0x210000;
+# no filesystem, the loader parses it in place after one copy into PSRAM.
+# Name,    Type, SubType, Offset,   Size
+nvs,       data, nvs,     0x9000,   0x6000
+phy_init,  data, phy,     0xf000,   0x1000
+factory,   app,  factory, 0x10000,  0x200000
+weights,   data, 0x40,    0x210000, 0x1200000

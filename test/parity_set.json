@@ -1,0 +1,68 @@
+{
+  "_comment": "The fixed query+tools set every hop is validated against: JAX/HF reference -> numpy reference -> CQ4-dequant host -> board. Same inputs, same expected tool call, at every stage. Do not edit casually - changing a case invalidates every recorded baseline. Add new cases at the end.",
+  "_schema": {
+    "id": "stable short name, used in filenames",
+    "query": "the user utterance fed to the encoder",
+    "tools": "the tool definitions JSON string, exactly as passed to generate()",
+    "expect": "the tool call we believe is correct; NOT authoritative until the host reference confirms it",
+    "why": "what this case is here to catch"
+  },
+  "cases": [
+    {
+      "id": "weather_sf",
+      "query": "What's the weather in San Francisco?",
+      "tools": "[{\"name\":\"get_weather\",\"description\":\"Get current weather for a city.\",\"parameters\":{\"location\":{\"type\":\"string\",\"description\":\"City name.\",\"required\":true}}}]",
+      "expect": "[{\"name\":\"get_weather\",\"arguments\":{\"location\":\"San Francisco\"}}]",
+      "why": "The README's own example. If this breaks, the port is broken - it is the canary, not a test."
+    },
+    {
+      "id": "single_tool_no_args",
+      "query": "What time is it?",
+      "tools": "[{\"name\":\"get_time\",\"description\":\"Get the current time.\",\"parameters\":{}}]",
+      "expect": "[{\"name\":\"get_time\",\"arguments\":{}}]",
+      "why": "Empty argument object. Exercises the shortest possible decode and the constrained-decoder's empty-object path."
+    },
+    {
+      "id": "two_tools_pick_second",
+      "query": "Turn off the kitchen lights.",
+      "tools": "[{\"name\":\"get_weather\",\"description\":\"Get current weather for a city.\",\"parameters\":{\"location\":{\"type\":\"string\",\"description\":\"City name.\",\"required\":true}}},{\"name\":\"set_light\",\"description\":\"Turn a light on or off.\",\"parameters\":{\"room\":{\"type\":\"string\",\"description\":\"Room name.\",\"required\":true},\"on\":{\"type\":\"boolean\",\"description\":\"Desired state.\",\"required\":true}}}]",
+      "expect": "[{\"name\":\"set_light\",\"arguments\":{\"room\":\"kitchen\",\"on\":false}}]",
+      "why": "Tool SELECTION, not just extraction, plus a boolean argument. Quantization damage shows up in selection before it shows up in copying a string."
+    },
+    {
+      "id": "numeric_arg",
+      "query": "Set the thermostat to 68 degrees.",
+      "tools": "[{\"name\":\"set_thermostat\",\"description\":\"Set the target temperature.\",\"parameters\":{\"temperature\":{\"type\":\"number\",\"description\":\"Target temperature in Fahrenheit.\",\"required\":true}}}]",
+      "expect": "[{\"name\":\"set_thermostat\",\"arguments\":{\"temperature\":68}}]",
+      "why": "Digit tokens are rare and their embeddings quantize badly. A number that comes back as 6 or 688 is the classic 4-bit failure."
+    },
+    {
+      "id": "long_tools_context",
+      "query": "Play some jazz in the living room at half volume.",
+      "tools": "[{\"name\":\"get_weather\",\"description\":\"Get current weather for a city.\",\"parameters\":{\"location\":{\"type\":\"string\",\"description\":\"City name.\",\"required\":true}}},{\"name\":\"set_light\",\"description\":\"Turn a light on or off.\",\"parameters\":{\"room\":{\"type\":\"string\",\"description\":\"Room name.\",\"required\":true},\"on\":{\"type\":\"boolean\",\"description\":\"Desired state.\",\"required\":true}}},{\"name\":\"set_thermostat\",\"description\":\"Set the target temperature.\",\"parameters\":{\"temperature\":{\"type\":\"number\",\"description\":\"Target temperature in Fahrenheit.\",\"required\":true}}},{\"name\":\"send_message\",\"description\":\"Send a text message to a contact.\",\"parameters\":{\"recipient\":{\"type\":\"string\",\"description\":\"Contact name.\",\"required\":true},\"body\":{\"type\":\"string\",\"description\":\"Message text.\",\"required\":true}}},{\"name\":\"play_music\",\"description\":\"Play music in a room.\",\"parameters\":{\"genre\":{\"type\":\"string\",\"description\":\"Music genre.\",\"required\":true},\"room\":{\"type\":\"string\",\"description\":\"Room name.\",\"required\":true},\"volume\":{\"type\":\"number\",\"description\":\"Volume from 0 to 100.\",\"required\":false}}},{\"name\":\"set_timer\",\"description\":\"Start a countdown timer.\",\"parameters\":{\"minutes\":{\"type\":\"number\",\"description\":\"Duration in minutes.\",\"required\":true}}}]",
+      "expect": "[{\"name\":\"play_music\",\"arguments\":{\"genre\":\"jazz\",\"room\":\"living room\",\"volume\":50}}]",
+      "why": "Six tools is a realistic encoder prefill length and drives the worst-case encoder cost. Also an OPTIONAL argument and an inferred value ('half' -> 50)."
+    },
+    {
+      "id": "no_matching_tool",
+      "query": "Write me a poem about the sea.",
+      "tools": "[{\"name\":\"get_weather\",\"description\":\"Get current weather for a city.\",\"parameters\":{\"location\":{\"type\":\"string\",\"description\":\"City name.\",\"required\":true}}}]",
+      "expect": null,
+      "why": "Negative case. Whatever the reference does here - refuse, emit nothing, or hallucinate get_weather - the BOARD must do the same thing. expect:null means 'match the host reference', not 'must be empty'."
+    },
+    {
+      "id": "ups_status",
+      "query": "Is the UPS still on mains power?",
+      "tools": "[{\"name\":\"get_ups_status\",\"description\":\"Read the current UPS state.\",\"parameters\":{\"field\":{\"type\":\"string\",\"description\":\"Which field to read: mains, ac_draw, battery, runtime.\",\"required\":true}}}]",
+      "expect": "[{\"name\":\"get_ups_status\",\"arguments\":{\"field\":\"mains\"}}]",
+      "why": "The actual product. This board already serves UPS telemetry over Ethernet; this is the query that has to work for Needle-on-P4 to be worth anything."
+    },
+    {
+      "id": "unicode_and_punct",
+      "query": "Text Jose: \"running late — be there in 10\"",
+      "tools": "[{\"name\":\"send_message\",\"description\":\"Send a text message to a contact.\",\"parameters\":{\"recipient\":{\"type\":\"string\",\"description\":\"Contact name.\",\"required\":true},\"body\":{\"type\":\"string\",\"description\":\"Message text.\",\"required\":true}}}]",
+      "expect": null,
+      "why": "Tokenizer torture: an em dash, nested quotes, and a digit. This case exists to catch a C tokenizer port that diverges from SentencePiece on byte_fallback. Compare TOKEN IDS here, not just the final JSON."
+    }
+  ]
+}

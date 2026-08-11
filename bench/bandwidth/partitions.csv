@@ -1,0 +1,8 @@
+# One small app plus a large read-only region standing in for the model, so the
+# mmapped-flash read path is measured against a realistic 14 MB span rather than
+# a toy buffer. 32 MB flash is confirmed on this board (GigaDevice c8:4019).
+# Name,   Type, SubType, Offset,   Size
+nvs,      data, nvs,     0x9000,   0x6000
+phy_init, data, phy,     0xf000,   0x1000
+factory,  app,  factory, 0x10000,  0x200000
+weights,  data, 0x40,    0x210000, 0xE00000

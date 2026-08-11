@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Needle on an ESP32-P4</title>
+<style>
+  :root {
+    --paper:#05070a; --card:#0D1320; --ink:#E8FFF2; --muted:#6A9A7C;
+    --rule:#1A3D2A; --hair:#0E2D1E;
+    --blue:#39FF9A; --brass:#FF8A00; --rust:#FF3FB6; --good:#B6FF00;
+    --sky:#0E2D1E; --sun:#FFD600;
+    --pink:#FF3FB6; --lime:#B6FF00; --panel:#1B1B1B; --void:#000000;
+    --glow-g:0 0 8px rgba(57,255,154,.45),0 0 22px rgba(57,255,154,.18);
+    --glow-o:0 0 8px rgba(255,138,0,.45),0 0 22px rgba(255,138,0,.18);
+    --glow-p:0 0 8px rgba(255,63,182,.45),0 0 22px rgba(255,63,182,.18);
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  * { box-sizing:border-box; }
+  html { background:var(--void); }
+  body { margin:0; padding:0 20px 90px; background:var(--paper); color:var(--ink);
+         font-family:var(--mono); font-size:15px; line-height:1.65;
+         -webkit-font-smoothing:none; image-rendering:pixelated;
+         background-image:
+           linear-gradient(rgba(57,255,154,.03) 1px, transparent 1px),
+           radial-gradient(ellipse 90% 50% at 50% -10%, rgba(57,255,154,.07), transparent 55%);
+         background-size:100% 3px, 100% 100%;
+         background-attachment:fixed; }
+  body::before {
+    content:""; pointer-events:none; position:fixed; inset:0; z-index:9999;
+    background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.12) 2px, rgba(0,0,0,.12) 3px);
+    opacity:.35; }
+  .wrap { max-width:760px; margin:0 auto; position:relative; }
+
+  header { padding:48px 0 8px; }
+  .eyebrow { font-family:var(--mono); font-size:10px; letter-spacing:.22em;
+             text-transform:uppercase; color:var(--blue); margin:0 0 16px;
+             text-shadow:var(--glow-g); }
+  h1 { font-size:clamp(26px,4.8vw,40px); line-height:1.12; margin:0 0 16px;
+       font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+       text-wrap:balance; color:var(--blue); text-shadow:var(--glow-g); }
+  h1 em { font-style:normal; color:var(--brass); text-shadow:var(--glow-o); }
+  .stand { color:var(--muted); margin:0; max-width:58ch; font-size:14px; }
+  .stand b { color:var(--lime); font-weight:700; }
+
+  .status { display:flex; align-items:center; gap:10px; font-family:var(--mono);
+            font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+            color:var(--muted); margin-top:20px; }
+  .dot { width:8px; height:8px; border-radius:0; background:var(--muted); flex:none;
+         box-shadow:0 0 0 1px var(--rule); }
+  .dot.ok { background:var(--good); box-shadow:0 0 8px var(--good),0 0 0 1px var(--good); }
+  .dot.bad { background:var(--rust); box-shadow:0 0 8px var(--rust),0 0 0 1px var(--rust); }
+
+  .ask { margin-top:30px; border:2px solid var(--rule); background:var(--card);
+         padding:16px 16px 14px; }
+  label { display:block; font-family:var(--mono); font-size:10px; letter-spacing:.2em;
+          text-transform:uppercase; color:var(--blue); margin:0 0 10px; }
+  textarea { width:100%; background:var(--paper); color:var(--ink); border:2px solid var(--rule);
+             border-radius:0; padding:12px 14px; font-family:var(--mono); font-size:15px;
+             line-height:1.5; resize:vertical; }
+  #tools { font-family:var(--mono); font-size:12px; min-height:150px; }
+  textarea:focus { outline:none; border-color:var(--blue); }
+  #query { min-height:62px; }
+
+  .askrow { display:flex; align-items:flex-end; gap:12px; margin-top:12px; flex-wrap:wrap; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; flex:1; }
+  .chips button { font-family:var(--mono); font-size:10px; letter-spacing:.1em;
+                  text-transform:uppercase; background:transparent; color:var(--muted);
+                  border:1px solid var(--rule); border-radius:0; padding:7px 11px; cursor:pointer; }
+  .chips button:hover { color:var(--blue); border-color:var(--blue); }
+  .askrow > #run { font-family:var(--mono); font-size:12px; letter-spacing:.16em;
+               text-transform:uppercase; flex:none;
+               background:var(--blue); color:#04140c; border:2px solid var(--blue); border-radius:0;
+               padding:11px 28px; cursor:pointer; font-weight:700;
+               box-shadow:var(--glow-g); }
+  .askrow > #run:hover:not(:disabled) { background:var(--lime); border-color:var(--lime);
+                                    box-shadow:0 0 10px rgba(182,255,0,.5); }
+  .askrow > #run:disabled { background:var(--panel); color:var(--muted); border-color:var(--rule);
+                        box-shadow:none; cursor:default; opacity:1; }
+  .worker { margin-top:16px; border:2px solid var(--rule); background:var(--card);
+            display:none; border-radius:0; }
+  .worker.on { display:block; animation:rise .3s ease-out; }
+  .worker canvas { display:block; width:100%; height:84px; image-rendering:pixelated; }
+  .worker .cap2 { font-family:var(--mono); font-size:10px; letter-spacing:.1em;
+                  text-transform:uppercase; color:var(--muted);
+                  padding:9px 14px; border-top:1px solid var(--hair);
+                  display:flex; justify-content:space-between; gap:10px; background:var(--panel); }
+  .worker .cap2 b { color:var(--sun); font-weight:700; font-variant-numeric:tabular-nums;
+                    text-shadow:0 0 8px rgba(255,214,0,.35); }
+
+  .spin { display:inline-block; width:11px; height:11px; border:2px solid var(--rule);
+          border-top-color:var(--blue); border-radius:0; animation:sp .8s linear infinite;
+          vertical-align:-1px; margin-right:5px; }
+  @keyframes sp { to { transform:rotate(360deg); } }
+
+  #stage { margin-top:34px; }
+  .card { border:2px solid var(--blue); background:var(--card); overflow:hidden;
+          border-radius:0; animation:rise .35s ease-out;
+          box-shadow:var(--glow-g), inset 0 0 40px rgba(57,255,154,.03); }
+  @keyframes rise { from { opacity:0; transform:translateY(6px); } }
+  @media (prefers-reduced-motion:reduce){
+    .card,.worker.on{animation:none} .spin{animation:none} body::before{display:none}
+  }
+  .card .cap { font-family:var(--mono); font-size:10px; letter-spacing:.18em;
+               text-transform:uppercase; color:var(--blue); padding:11px 16px;
+               border-bottom:1px solid var(--hair); display:flex;
+               justify-content:space-between; gap:10px; background:var(--panel);
+               text-shadow:var(--glow-g); }
+
+  .wx { display:flex; gap:26px; padding:26px 18px 24px; align-items:flex-start; flex-wrap:wrap;
+        background:linear-gradient(160deg, color-mix(in srgb, var(--sky) 55%, transparent), transparent 70%); }
+  .wx .t { font-size:64px; line-height:.92; font-weight:700; letter-spacing:.02em;
+           font-variant-numeric:tabular-nums; color:var(--blue); text-shadow:var(--glow-g); }
+  .wx .t sup { font-size:20px; font-weight:400; color:var(--muted); text-shadow:none; }
+  .wx .who2 { font-size:20px; line-height:1.25; letter-spacing:.04em; text-transform:uppercase;
+              color:var(--brass); text-shadow:var(--glow-o); font-weight:700; }
+  .wx .cond { color:var(--muted); font-size:13px; margin-top:4px; }
+  .wx dl { margin:0 0 0 auto; display:grid; grid-template-columns:auto auto; gap:4px 16px;
+           font-family:var(--mono); font-size:11px; letter-spacing:.04em; }
+  .wx dt { color:var(--muted); text-transform:uppercase; letter-spacing:.1em; font-size:9.5px; }
+  .wx dd { margin:0; font-variant-numeric:tabular-nums; color:var(--ink); }
+
+  .timer { padding:30px 18px; text-align:center; }
+  .timer .t { font-size:60px; font-weight:700; font-variant-numeric:tabular-nums;
+              letter-spacing:.06em; line-height:1; color:var(--sun); text-shadow:0 0 16px rgba(255,214,0,.4); }
+  .timer .lab { font-family:var(--mono); font-size:11px; color:var(--muted);
+                letter-spacing:.16em; text-transform:uppercase; margin-top:10px; }
+  .sun { padding:18px 18px 20px; }
+  .sun svg { width:100%; height:auto; display:block; }
+  .sun .arcline { fill:none; stroke:var(--sun); stroke-width:2;
+                  filter:drop-shadow(0 0 4px rgba(255,214,0,.6)); }
+  .sun .ground { stroke:var(--rule); stroke-width:1; }
+  .sunrow { display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr));
+            gap:10px; margin-top:12px; font-family:var(--mono); }
+  .sunrow span { display:block; font-size:9px; letter-spacing:.16em;
+                 text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+  .sunrow b { font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; color:var(--brass); }
+  .sun .place { margin-top:12px; color:var(--muted); font-size:13px; letter-spacing:.04em; }
+
+  .fact { display:flex; gap:18px; padding:20px 18px; align-items:flex-start; }
+  .fact img { width:104px; height:104px; object-fit:cover; flex:none;
+              border:2px solid var(--rule); border-radius:0; image-rendering:auto; }
+  .fact .who2 { font-size:18px; letter-spacing:.04em; text-transform:uppercase;
+                color:var(--brass); text-shadow:var(--glow-o); font-weight:700; }
+  .fact p { margin:8px 0 0; font-size:14px; color:var(--muted); }
+  .wlink { display:inline-block; margin-top:12px; font-family:var(--mono); font-size:10px;
+           letter-spacing:.14em; text-transform:uppercase; color:var(--brass);
+           text-decoration:none; border-bottom:1px solid var(--brass); padding-bottom:1px; }
+  .wlink:hover { color:var(--sun); border-color:var(--sun); }
+  .opts { display:flex; flex-direction:column; gap:6px; margin-top:12px; }
+  .opts button { font-family:var(--mono); font-size:12px; text-align:left;
+                 background:transparent; color:var(--ink); border:1px solid var(--rule);
+                 border-radius:0; padding:8px 12px; cursor:pointer; }
+  .opts button span { color:var(--muted); font-size:11px; }
+  .opts button:hover { border-color:var(--blue); color:var(--blue); }
+
+  .tone { padding:26px 18px; text-align:center; }
+  .tone .bars { display:flex; gap:5px; justify-content:center; align-items:flex-end; height:54px; }
+  .tone .bars i { width:7px; height:14px; background:var(--blue); border-radius:0;
+                  box-shadow:0 0 6px rgba(57,255,154,.5);
+                  animation:eq .62s ease-in-out infinite alternate; }
+  @keyframes eq { to { height:52px; } }
+  @media (prefers-reduced-motion:reduce){ .tone .bars i{animation:none;height:32px} }
+  .tone .lab { font-family:var(--mono); font-size:11px; color:var(--muted);
+               letter-spacing:.16em; text-transform:uppercase; margin-top:14px; }
+
+  .board { padding:22px 18px; display:flex; gap:28px; align-items:center; flex-wrap:wrap; }
+  .board .t { font-size:44px; font-weight:700; font-variant-numeric:tabular-nums;
+              letter-spacing:.04em; line-height:1; color:var(--lime);
+              text-shadow:0 0 12px rgba(182,255,0,.4); }
+  .board .lab { font-family:var(--mono); font-size:10px; color:var(--muted);
+                letter-spacing:.16em; text-transform:uppercase; margin-top:6px; }
+  .board dl { margin:0 0 0 auto; display:grid; grid-template-columns:auto auto;
+              gap:4px 16px; font-family:var(--mono); font-size:11px; }
+  .board dt { color:var(--muted); text-transform:uppercase; letter-spacing:.1em; font-size:9.5px; }
+  .board dd { margin:0; color:var(--ink); }
+
+  .plain { padding:20px 18px; color:var(--muted); }
+  .plain code { font-family:var(--mono); font-size:.88em; color:var(--blue); }
+  .plain b { color:var(--brass); }
+
+  details { margin-top:14px; border:2px solid var(--rule); background:var(--card);
+            border-radius:0; padding:0 16px; }
+  details > summary { font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+            text-transform:uppercase; color:var(--muted); cursor:pointer; padding:14px 0;
+            list-style:none; }
+  details > summary::-webkit-details-marker { display:none; }
+  details > summary::before { content:"+ "; color:var(--blue); }
+  details[open] > summary::before { content:"– "; }
+  details > summary:hover { color:var(--blue); }
+  details[open] { border-color:var(--blue); box-shadow:0 0 0 1px rgba(57,255,154,.1); }
+  .inner { padding:2px 0 20px; }
+  .inner > p { color:var(--muted); font-size:14px; }
+
+  .pipe { display:flex; align-items:stretch; gap:10px; flex-wrap:wrap;
+          font-family:var(--mono); font-size:11px; color:var(--muted); }
+  .stg { border:2px solid var(--rule); background:var(--panel); padding:10px 12px;
+         flex:1 1 132px; border-radius:0; }
+  .stg .w { font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+            display:block; margin-bottom:4px; }
+  .stg b { color:var(--ink); font-weight:700; font-variant-numeric:tabular-nums; }
+  .w.browser { color:var(--brass); } .w.board { color:var(--blue); } .w.net { color:var(--good); }
+
+  .metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(104px,1fr));
+             gap:2px; background:var(--rule); margin:16px 0 0; border:2px solid var(--rule); }
+  .metric { background:var(--panel); padding:11px 10px 13px; }
+  .metric dt { font-family:var(--mono); font-size:9px; letter-spacing:.14em;
+               text-transform:uppercase; color:var(--muted); margin:0 0 4px; }
+  .metric dd { font-family:var(--mono); font-size:15px; margin:0; font-variant-numeric:tabular-nums;
+               color:var(--blue); font-weight:700; }
+  .metric dd small { font-size:10px; color:var(--muted); font-weight:400; }
+
+  pre { background:var(--panel); border:2px solid var(--rule); border-radius:0;
+        padding:13px 15px; overflow-x:auto; font-family:var(--mono); font-size:12px;
+        line-height:1.6; margin:12px 0; color:var(--ink);
+        box-shadow:inset 0 0 20px rgba(0,0,0,.35); }
+  code { font-family:var(--mono); color:var(--lime); }
+  .ids { font-family:var(--mono); font-size:11px; color:var(--muted); word-break:break-all;
+         line-height:1.75; }
+  .ids b { color:var(--blue); }
+  h4 { font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+       color:var(--brass); margin:22px 0 6px; font-weight:700; text-shadow:var(--glow-o); }
+  h4:first-child { margin-top:6px; }
+  .err { border:2px solid var(--rust); border-left:4px solid var(--rust);
+         padding:10px 14px; color:var(--rust); background:rgba(255,63,182,.06);
+         font-family:var(--mono); font-size:12px; margin-top:16px;
+         box-shadow:var(--glow-p); letter-spacing:.04em; }
+  a { color:var(--blue); text-decoration:none; border-bottom:1px solid rgba(57,255,154,.35); }
+  a:hover { color:var(--lime); border-bottom-color:var(--lime); text-shadow:var(--glow-g); }
+  #copyjsonl { font-family:var(--mono); font-size:10px; letter-spacing:.14em;
+    text-transform:uppercase; background:var(--panel); color:var(--brass);
+    border:2px solid var(--brass); border-radius:0; padding:8px 14px; cursor:pointer; }
+  #copyjsonl:hover { box-shadow:var(--glow-o); color:var(--sun); border-color:var(--sun); }
+
+  /* tool-retrieval toggle: visible, default ON (battery says k=2 is safe) */
+  .retr { margin-top:12px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+          font-family:var(--mono); font-size:11px; color:var(--muted); }
+  .retr label.tog { display:flex; align-items:center; gap:8px; cursor:pointer;
+                    letter-spacing:.08em; text-transform:uppercase; color:var(--blue); }
+  .retr input[type=checkbox] { width:14px; height:14px; accent-color:var(--blue); cursor:pointer; }
+  .retr #retr_info { color:var(--muted); font-size:11px; letter-spacing:.04em; }
+  .retr #retr_info b { color:var(--lime); font-weight:700; }
+  .retr select { background:var(--paper); color:var(--ink); border:1px solid var(--rule);
+                 font-family:var(--mono); font-size:11px; padding:4px 8px; border-radius:0; }
+
+  /* Touch targets: chips, retrieval controls, run >= 44px on small viewports */
+  @media (max-width: 600px) {
+    .chips button { min-height:44px; padding:12px 14px; }
+    .retr label.tog { min-height:44px; }
+    .retr input[type=checkbox] { width:22px; height:22px; min-width:22px; min-height:22px; }
+    .retr select { min-height:44px; padding:10px 12px; }
+    .askrow > #run { min-height:44px; padding:12px 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">MicroNeedle</p>
+  <h1>Ask a <em>microcontroller</em> to do something</h1>
+  <p class="stand">There are six built-in tools. Weather, sunset times, a lookup, a
+  sound, a timer, and board status. You ask it something and it picks one, and
+  runs it.</p>
+  <div class="status"><span class="dot" id="dot"></span><span id="stat">connecting</span></div>
+</header>
+
+<div class="ask">
+  <label for="query">Ask</label>
+  <textarea id="query" spellcheck="false">What's the weather in San Francisco?</textarea>
+  <div class="askrow">
+    <div class="chips" id="chips"></div>
+    <button id="run" disabled>Run</button>
+  </div>
+  <div class="retr">
+    <label class="tog" title="Prune the tools schema to the top-k matches before the model sees it. Cuts encoder tokens (prefill).">
+      <input type="checkbox" id="retr_on" checked>
+      tool retrieval
+    </label>
+    <label class="tog">k
+      <select id="retr_k" aria-label="top-k tools">
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+      </select>
+    </label>
+    <span id="retr_info">sends all 6 tools until you run</span>
+  </div>
+</div>
+
+<div class="worker" id="worker">
+  <canvas id="wcanvas" width="360" height="66" aria-label="a small worker carrying tokens"></canvas>
+  <div class="cap2"><span id="wsay">warming up</span><b id="wclock">0.0 s</b></div>
+</div>
+
+<div id="stage"></div>
+<div id="errbox"></div>
+
+<details id="d_method">
+  <summary>How it got there</summary>
+  <div class="inner">
+    <div class="pipe" id="pipe"></div>
+    <dl class="metrics" id="metrics"></dl>
+    <h4>What the model emitted</h4>
+    <pre id="rawcall">–</pre>
+    <h4>Tools it was offered</h4>
+    <textarea id="tools" spellcheck="false"></textarea>
+    <h4>Token ids</h4>
+    <div class="ids" id="ids">–</div>
+    <h4>Keep it as training data</h4>
+    <p style="font-size:14px;color:var(--muted);margin:0 0 8px">One JSONL line in the
+    schema <code>needle finetune</code> reads. Correct the call first if it got it wrong.</p>
+    <pre id="jsonl">–</pre>
+    <button id="copyjsonl">copy line</button>
+  </div>
+</details>
+
+<details id="d_api">
+  <summary>Build on it</summary>
+  <div class="inner">
+    <p style="margin-top:6px">The board answers token ids over HTTP. Everything else
+    is one module you can import straight from it.</p>
+
+<h4>Ask it something</h4>
+<pre>import { Needle } from "http://BOARD/needle.js";
+const n = await Needle.connect({ base: "http://BOARD" });
+
+const tools = [{
+  name: "get_weather",
+  description: "Get current weather for a location",
+  parameters: { type: "object",
+                properties: { location: { type: "string" } },
+                required: ["location"] }
+}];
+
+const r = await n.call("What's the weather in Oslo?", tools);
+r.call    // { name: "get_weather", arguments: { location: "Oslo" } }
+r.stats   // { promptTokens, generatedTokens, encMs, tokMs, ... }</pre>
+
+<h4>Run what it picks</h4>
+<pre>n.register("get_weather", async ({ location }) =&gt; {
+  const w = await fetch(`https://wttr.in/${location}?format=j1`);
+  return (await w.json()).current_condition[0];
+});
+
+const out = await n.run(r.call);   // null when nothing is registered</pre>
+
+<h4>Tokenize and detokenize</h4>
+<pre>n.encode("What's the weather in Oslo?")   // [4279, 743, ...]
+n.decode([4279, 743])                     // "What is"
+
+// the exact encoder input the model sees:
+//   [query tokens] &lt;tools&gt; [tools-JSON tokens]
+n.prompt(query, tools).ids
+
+// Same code path at training time and at inference time, so a dataset
+// built with this cannot drift from what the board actually reads.</pre>
+
+<h4>Or skip the library</h4>
+<pre>curl -s http://BOARD/api/tokens \
+  -H 'Content-Type: application/json' \
+  -d '{"ids":[4279,743,302,1149]}'
+
+{"gen_ids":[...],"enc_ms":3979,"tok_ms":123.9,"mode":"onboard"}</pre>
+
+    <p><code>GET /vocab.txt</code> is the 8192-entry vocabulary.
+    <code>GET /api/status</code> reports the kernel self-tests the board ran at boot.</p>
+  </div>
+</details>
+
+<details id="d_what">
+  <summary>What this is</summary>
+  <div class="inner">
+    <p style="margin-top:6px">Needle is a 26M-parameter encoder-decoder from
+    <a href="https://github.com/cactus-compute/needle">Cactus Compute</a>. It turns a
+    request plus a list of tools into a function call. No feed-forward layers anywhere,
+    which is most of why it fits.</p>
+    <p>The forward pass here is a from-scratch C99 and RISC-V vector-assembly port.
+    Weights are int4 with an int8 embedding, 14.66 MiB resident. On a fixed set of
+    eight cases the board matches the reference implementation token for token.</p>
+    <p>The board serves this page. Tokenizing happens in your browser. The model
+    runs on the chip. Encoder runs once per request and scales with prompt length,
+    so one tool is about 0.4 s and a full 271-token catalogue about 5.4 s (5.6 s warm-cached) (last
+    board-certified figures). Decode is 89–108 ms/token. Nothing is cached.</p>
+  </div>
+</details>
+
+</div>
+
+<script type="module">
+import { Needle } from "./needle.js";
+/* Mirrored scorer: tools/tool_retrieval.py ↔ web/tool_retrieval.js (changed together). */
+import { selectTools, scoreAll } from "./tool_retrieval.js";
+
+const $ = id => document.getElementById(id);
+let N = null, timer = null;
+
+const T = {
+  weather: { name: "get_weather", description: "Get current weather for a location",
+    parameters: { type: "object", properties: { location: { type: "string" } }, required: ["location"] } },
+  sun: { name: "get_sun_times", description: "Get sunrise and sunset times for a location",
+    parameters: { type: "object", properties: { location: { type: "string" } }, required: ["location"] } },
+  look_up: { name: "look_up", description: "Look up factual information about a topic",
+    parameters: { type: "object", properties: { topic: { type: "string" } }, required: ["topic"] } },
+  timer: { name: "set_timer", description: "Set a countdown timer",
+    parameters: { type: "object", properties: { minutes: { type: "integer" } }, required: ["minutes"] } },
+  tone: { name: "play_tone", description: "Play a sound: chime, alarm, or success",
+    parameters: { type: "object", properties: { sound: { type: "string" } }, required: ["sound"] } },
+  board: { name: "board_status", description: "Report this device's own uptime, memory and network",
+    parameters: { type: "object", properties: {}, required: [] } },
+};
+const ALL = Object.values(T);
+
+/* Wikimedia asks API clients to identify themselves; anonymous traffic gets
+ * rate-limited first. A browser cannot set User-Agent, so they accept
+ * Api-User-Agent from CORS clients instead -- send it on every wikipedia call. */
+const WIKI_UA = { headers: { "Api-User-Agent": "MicroNeedle-demo/1.0 (ESP32-P4 on-device model demo)" } };
+const wikiSummary = async (key) => {
+  const r = await fetch("https://en.wikipedia.org/api/rest_v1/page/summary/" +
+                        encodeURIComponent(key), WIKI_UA);
+  return r.ok ? r.json().catch(() => null) : null;
+};
+/* Search goes through api.php with origin=*, the documented anonymous-CORS
+ * mechanism, whose preflight is known to allow Api-User-Agent. rest.php's
+ * preflight could not be confirmed to, and a disallowed header turns a
+ * rate-limit risk into a hard CORS block. */
+const wikiSearch = async (q, limit) => {
+  const u = "https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=" +
+            encodeURIComponent(q) + "&gsrlimit=" + limit +
+            "&prop=description&format=json&origin=*";
+  const s = await fetch(u, WIKI_UA);
+  if (!s.ok) return [];
+  const pages = Object.values((await s.json().catch(() => null))?.query?.pages || {});
+  pages.sort((a, b) => a.index - b.index);
+  return pages.map(pg => ({ key: pg.title.replace(/\s+/g, "_"), title: pg.title,
+                            description: pg.description || "" }));
+};
+
+/* Default catalogue is all six tools. With tool retrieval ON (default), the
+ * page scores the query lexically and sends only the top-k — see
+ * web/tool_retrieval.js. The textarea under "How it got there" still shows
+ * exactly what the model was offered after pruning. */
+const EXAMPLES = [
+  ["weather",      "What's the weather in San Francisco?"],
+  ["daylight",     "When does the sun set in Reykjavik?"],
+  ["look it up",   "Tell me about the Antikythera mechanism"],
+  ["make a sound", "Play a chime"],
+  ["ask the board","How long have you been running?"],
+  ["timer",        "Set a timer for 3 minutes"],
+];
+
+$("tools").value = JSON.stringify(ALL, null, 2);
+EXAMPLES.forEach(([label, q]) => {
+  const b = document.createElement("button");
+  b.textContent = label;
+  b.onclick = () => { $("query").value = q; };
+  $("chips").appendChild(b);
+});
+
+/* Every tool here does something real. Nothing is stubbed: the network calls
+ * hit live APIs, the tone comes out of a speaker, and board_status is the
+ * device reporting on itself. */
+/* wttr.in returns coordinates alongside the weather and sends
+ * access-control-allow-origin:*, so it doubles as the geocoder. Nominatim does
+ * not set that header and cannot be called from a page at all. */
+async function geocode(place) {
+  const r = await fetch(`https://wttr.in/${encodeURIComponent(place)}?format=j1`);
+  if (!r.ok) throw new Error(`could not find "${place}"`);
+  const a = (await r.json()).nearest_area[0];
+  return { lat: +a.latitude, lon: +a.longitude,
+           name: [a.areaName[0].value, a.region[0].value].filter(Boolean).join(", ") };
+}
+
+let audioCtx = null;
+/* Browsers only let audio start inside a user gesture, and iOS enforces it
+ * hard. The tool handler runs ~8 s after the tap -- inference happens in
+ * between -- which is far outside the activation window, so a context created
+ * there stays suspended and the notes schedule against a frozen clock:
+ * silence, no error. warmAudio runs synchronously in the Run click, which IS
+ * the gesture, so by the time play_tone fires the clock is already running. */
+function warmAudio() {
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+}
+function playNotes(notes) {
+  warmAudio();
+  let t = audioCtx.currentTime + 0.02;
+  for (const [freq, dur] of notes) {
+    const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+    osc.type = "triangle"; osc.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.28, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + dur + 0.02);
+    t += dur * 0.86;
+  }
+  return t - audioCtx.currentTime;
+}
+
+const JINGLES = {
+  chime:   [[880, .18], [1174.7, .18], [1568, .42]],
+  success: [[659.3, .12], [830.6, .12], [987.8, .12], [1318.5, .40]],
+  alarm:   [[880, .12], [0, .06], [880, .12], [0, .06], [880, .12], [0, .06], [880, .34]],
+};
+
+function registerTools(n) {
+  n.register("get_weather", async ({ location, city, place }) => {
+    const loc = location || city || place;
+    if (!loc) throw new Error("the call had no location");
+    const r = await fetch(`https://wttr.in/${encodeURIComponent(loc)}?format=j1`);
+    if (!r.ok) throw new Error(`wttr.in returned ${r.status}`);
+    const d = await r.json();
+    const c = d.current_condition[0], a = d.nearest_area[0];
+    return { kind: "weather",
+      place: [a.areaName[0].value, a.region[0].value].filter(Boolean).join(", "),
+      tempC: c.temp_C, tempF: c.temp_F, feels: c.FeelsLikeC,
+      cond: c.weatherDesc[0].value.trim(),
+      wind: `${c.windspeedKmph} km/h ${c.winddir16Point}`,
+      humidity: `${c.humidity}%`, precip: `${c.precipMM} mm`, uv: c.uvIndex };
+  });
+
+  n.register("get_sun_times", async ({ location, city, place }) => {
+    const loc = location || city || place;
+    if (!loc) throw new Error("the call had no location");
+    const g = await geocode(loc);
+    const r = await fetch(`https://api.sunrisesunset.io/json?lat=${g.lat}&lng=${g.lon}`);
+    const j = (await r.json()).results;
+    const mins = t => { const m = /(\d+):(\d+):\d+\s*(AM|PM)/.exec(t);
+      if (!m) return null; let h = +m[1] % 12; if (m[3] === "PM") h += 12; return h * 60 + +m[2]; };
+    const rise = mins(j.sunrise), set = mins(j.sunset);
+    return { kind: "sun", place: g.name, sunrise: j.sunrise, sunset: j.sunset,
+             dawn: j.dawn, dusk: j.dusk, golden: j.golden_hour,
+             len: j.day_length, rise, set };
+  });
+
+  n.register("look_up", async ({ topic, query, subject }) => {
+    const t = topic || query || subject;
+    if (!t) throw new Error("the call had no topic");
+    /* The summary endpoint wants the exact article title, and the model says
+     * things like "the Antikythera mechanism". Try the phrase as given, then
+     * resolve it through title search, which forgives articles, casing and
+     * near-misses. Both endpoints send access-control-allow-origin: *. */
+    let d = await wikiSummary(t.replace(/\s+/g, "_"));
+    if (!d) {
+      const hit = (await wikiSearch(t, 1))[0];
+      if (hit) d = await wikiSummary(hit.key);
+    }
+    if (!d) throw new Error(`nothing found for "${t}"`);
+    /* An ambiguous title comes back typed as disambiguation, with an extract
+     * that is a run-together list. Offer the candidates instead: title search
+     * on the same term returns them ranked, with one-line descriptions. */
+    if (d.type === "disambiguation") {
+      const pages = await wikiSearch(t, 8);
+      const options = pages.filter(pg => pg.key !== d.title.replace(/\s+/g, "_"))
+        .map(pg => ({ key: pg.key, title: pg.title, description: pg.description || "" }));
+      if (options.length)
+        return { kind: "disambig", title: d.title, options,
+                 link: d.content_urls ? d.content_urls.desktop.page : null };
+    }
+    return { kind: "fact", title: d.title, extract: d.extract,
+             thumb: d.thumbnail ? d.thumbnail.source : null,
+             link: d.content_urls ? d.content_urls.desktop.page : null };
+  });
+
+  n.register("set_timer", async ({ minutes, duration }) => {
+    const m = Number(minutes ?? duration ?? 0);
+    if (!m) throw new Error("the call had no duration");
+    return { kind: "timer", seconds: Math.round(m * 60), minutes: m };
+  });
+
+  n.register("play_tone", async ({ sound, tone, name }) => {
+    const want = String(sound || tone || name || "chime").toLowerCase();
+    const key = Object.keys(JINGLES).find(k => want.includes(k)) || "chime";
+    const dur = playNotes(JINGLES[key]);
+    return { kind: "tone", name: key, seconds: dur.toFixed(1) };
+  });
+
+  n.register("board_status", async () => {
+    const s = await N.status();
+    return { kind: "board", ...s };
+  });
+}
+
+/* ---- the worker ------------------------------------------------------
+ * A 120x28 pixel stage, scaled up and drawn with rectangles. He works through
+ * an actual sequence rather than looping one animation: hauls a crate to the
+ * press, cranks it, wipes his brow, goes back for another. The longer the
+ * board takes the more he flags -- slower cranks, deeper stoop, more frequent
+ * breaks -- and the crates he has delivered stack up beside the press.
+ *
+ * It is decoration, but a multi-second prefill is going to happen and a progress
+ * bar that cannot predict itself is worse than a small man visibly suffering.
+ */
+const GW = 120, GH = 28;
+
+function makeWorker(canvas) {
+  const ctx = canvas.getContext("2d");
+  let raf = null, t0 = 0, delivered = 0, lastPhase = "";
+
+  const C = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+  const p = (x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x | 0, y | 0, w, h); };
+
+  /* one round trip: fetch -> carry -> crank -> wipe */
+  const LEG = { fetch: 2.2, carry: 2.6, crank: 2.0, wipe: 1.1 };
+
+  function man(x, y, ink, skin, accent, tired, pose, f) {
+    const stoop = Math.round(tired * 2);
+    y += stoop;
+    p(x + 2, y, 5, 4, skin);                       // head
+    p(x + 3, y + 1, 1, 1, ink); p(x + 5, y + 1, 1, 1, ink);
+    if (tired > .5) p(x + 2, y + 3, 5, 1, ink);    // grimace
+    p(x + 2, y + 4, 5, 6, accent);                 // torso
+    if (pose === "carry") { p(x + 1, y + 3, 1, 3, skin); p(x + 7, y + 3, 1, 3, skin); }
+    else if (pose === "crank") { const a = f < .5 ? 0 : 2; p(x + 7, y + 3 + a, 2, 2, skin); p(x + 1, y + 5, 1, 2, skin); }
+    else if (pose === "wipe") { p(x + 2, y - 1, 2, 2, skin); p(x + 7, y + 5, 1, 2, skin); }
+    else { p(x + 1, y + 5, 1, 2, skin); p(x + 7, y + 5, 1, 2, skin); }
+    const step = Math.floor(f * 8) % 4;
+    const legs = (pose === "fetch" || pose === "carry") ? [[0,2],[1,1],[2,0],[1,1]][step] : [1,1];
+    p(x + 2, y + 10, 2, legs[0] + 2, ink);
+    p(x + 5, y + 10, 2, legs[1] + 2, ink);
+  }
+
+  function draw(now) {
+    const el = (now - t0) / 1000;
+    const ink = C("--ink"), muted = C("--muted"), accent = C("--blue"),
+          brass = C("--brass"), paper = C("--card"), hair = C("--hair"), sun = C("--sun");
+    ctx.setTransform(canvas.width / GW, 0, 0, canvas.width / GW, 0, 0);
+    p(0, 0, GW, GH, paper);
+    p(0, GH - 4, GW, 1, hair);                     // floor
+
+    const tired = Math.min(1, el / 26);
+    const cycle = (LEG.fetch + LEG.carry + LEG.crank + LEG.wipe) * (1 + tired * .7);
+    const inCycle = el % cycle;
+    const n = cycle / (1 + tired * .7);
+    const s1 = LEG.fetch * (1 + tired * .7), s2 = s1 + LEG.carry * (1 + tired * .7),
+          s3 = s2 + LEG.crank * (1 + tired * .7);
+    delivered = Math.floor(el / cycle);
+
+    const PILE = 12, PRESS = 96;
+    let phase, f, x, carrying = false;
+    if (inCycle < s1)      { phase = "fetch"; f = inCycle / s1;        x = PRESS - (PRESS - PILE) * f; }
+    else if (inCycle < s2) { phase = "carry"; f = (inCycle - s1) / (s2 - s1); x = PILE + (PRESS - PILE) * f; carrying = true; }
+    else if (inCycle < s3) { phase = "crank"; f = (inCycle - s2) / (s3 - s2); x = PRESS; }
+    else                   { phase = "wipe";  f = (inCycle - s3) / (cycle - s3); x = PRESS; }
+    lastPhase = phase;
+
+    // the pile he draws from
+    for (let i = 0; i < 4; i++) p(PILE - 6 + (i % 2) * 5, GH - 8 - Math.floor(i / 2) * 4, 4, 3, brass);
+
+    // the press: a frame with a handle he turns, and a chute
+    p(PRESS + 6, GH - 18, 2, 14, muted);
+    p(PRESS + 14, GH - 18, 2, 14, muted);
+    p(PRESS + 6, GH - 20, 10, 2, ink);
+    const ang = phase === "crank" ? f : 0;
+    const hx = PRESS + 16 + Math.round(Math.cos(ang * Math.PI * 4) * 2);
+    const hy = GH - 13 + Math.round(Math.sin(ang * Math.PI * 4) * 2);
+    p(hx, hy, 2, 2, phase === "crank" ? sun : muted);
+
+    // delivered tokens stacking under the chute
+    for (let i = 0; i < Math.min(delivered, 8); i++)
+      p(PRESS + 7 + (i % 4) * 2, GH - 7 - Math.floor(i / 4) * 3, 2, 2, accent);
+
+    if (carrying) p(x + 1, GH - 22 + Math.round(tired * 2), 7, 4, brass);
+    man(x, GH - 18, ink, muted, accent, tired, phase, f);
+
+    // sweat, once he is flagging
+    if (tired > .4 && phase !== "fetch" && Math.floor(el * 3) % 3 === 0)
+      p(x + 8, GH - 20, 1, 2, accent);
+
+    raf = requestAnimationFrame(draw);
+  }
+
+  return {
+    start() {
+      t0 = performance.now(); delivered = 0;
+      canvas.width = (canvas.clientWidth || 360) * 2;
+      canvas.height = Math.round(canvas.width * GH / GW);
+      cancelAnimationFrame(raf); raf = requestAnimationFrame(draw);
+    },
+    stop() { cancelAnimationFrame(raf); raf = null; },
+    elapsed() { return (performance.now() - t0) / 1000; },
+    phase() { return lastPhase; },
+    delivered() { return delivered; },
+  };
+}
+
+const PHASE_SAY = {
+  fetch: ["going back for more", "fetching another crate", "one more trip"],
+  carry: ["hauling tokens", "carrying a load", "heavier than it looks"],
+  crank: ["cranking the encoder", "turning the handle", "grinding through it"],
+  wipe:  ["catching a breath", "wiping his brow", "brief union-mandated pause"],
+};
+
+const worker = makeWorker($("wcanvas"));
+let workerTick = null;
+
+function workerStart() {
+  $("worker").classList.add("on");
+  worker.start();
+  let lastSaid = "";
+  const bump = () => {
+    const el = worker.elapsed();
+    $("wclock").textContent = el.toFixed(1) + " s";
+    const opts = PHASE_SAY[worker.phase()] || ["working"];
+    /* Cycle quotes every ~2.5s so secondary lines appear during typical 2–8s runs */
+    const pick = opts[Math.min(opts.length - 1, Math.floor(el / 2.5))];
+    if (pick !== lastSaid) { $("wsay").textContent = pick; lastSaid = pick; }
+  };
+  bump();
+  workerTick = setInterval(bump, 120);
+}
+function workerStop() {
+  worker.stop();
+  clearInterval(workerTick); workerTick = null;
+  $("worker").classList.remove("on");
+}
+
+/* Everything interpolated into innerHTML below comes from the model, a
+ * third-party API, or the board. None of it is trusted markup. */
+const esc = v => String(v ?? "").replace(/[&<>"']/g,
+  c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const card = (l, r, inner) =>
+  `<div class="card"><div class="cap"><span>${esc(l)}</span><span>${esc(r)}</span></div>${inner}</div>`;
+
+function showResult(name, out) {
+  if (timer) { clearInterval(timer); timer = null; }
+  const st = $("stage");
+  const k = out && out.kind;
+
+  if (k === "weather") {
+    st.innerHTML = card(name, "live from wttr.in", `<div class="wx">
+      <div class="t">${esc(out.tempC)}<sup>°C</sup></div>
+      <div><div class="who2">${esc(out.place)}</div>
+           <div class="cond">${esc(out.cond)}. Feels like ${esc(out.feels)}°C. ${esc(out.tempF)}°F.</div></div>
+      <dl><dt>wind</dt><dd>${esc(out.wind)}</dd>
+          <dt>humidity</dt><dd>${esc(out.humidity)}</dd>
+          <dt>precip</dt><dd>${esc(out.precip)}</dd>
+          <dt>uv</dt><dd>${esc(out.uv)}</dd></dl></div>`);
+
+  } else if (k === "sun") {
+    // where we are in the local day, as an arc
+    const now = new Date();
+    const frac = out.rise != null && out.set != null && out.set > out.rise
+      ? Math.min(1, Math.max(0, ((now.getHours() * 60 + now.getMinutes()) - out.rise) / (out.set - out.rise)))
+      : null;
+    const W = 520, H = 108, pad = 26;
+    const px = f => pad + f * (W - 2 * pad);
+    const py = f => H - 16 - Math.sin(f * Math.PI) * (H - 46);
+    const arc = Array.from({ length: 49 }, (_, i) => `${px(i / 48).toFixed(1)},${py(i / 48).toFixed(1)}`).join(" ");
+    const sun = frac == null ? "" :
+      `<circle cx="${px(frac).toFixed(1)}" cy="${py(frac).toFixed(1)}" r="7" fill="var(--sun)"/>`;
+    st.innerHTML = card(name, out.len + " of daylight", `<div class="sun">
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="daylight arc">
+        <line x1="${pad}" y1="${H - 16}" x2="${W - pad}" y2="${H - 16}" class="ground"/>
+        <polyline points="${arc}" class="arcline"/>${sun}
+      </svg>
+      <div class="sunrow">
+        <div><span>sunrise</span><b>${esc(out.sunrise)}</b></div>
+        <div><span>sunset</span><b>${esc(out.sunset)}</b></div>
+        <div><span>golden hour</span><b>${esc(out.golden)}</b></div>
+        <div><span>dusk</span><b>${esc(out.dusk)}</b></div>
+      </div>
+      <div class="place">${esc(out.place)}</div></div>`);
+
+  } else if (k === "fact") {
+    st.innerHTML = card(name, "wikipedia", `<div class="fact">
+      ${out.thumb ? `<img src="${encodeURI(out.thumb)}" alt="">` : ""}
+      <div><div class="who2">${esc(out.title)}</div><p>${esc(out.extract)}</p>
+      ${out.link ? `<a class="wlink" href="${encodeURI(out.link)}" target="_blank" rel="noopener">read on wikipedia</a>` : ""}
+      </div></div>`);
+
+  } else if (k === "disambig") {
+    /* several articles share the title; each option refetches client-side --
+     * the model already did its job picking the tool */
+    st.innerHTML = card(name, "wikipedia", `<div class="fact"><div>
+      <div class="who2">${esc(out.title)}</div>
+      <p>That title covers several things. Pick one:</p>
+      <div class="opts">${out.options.map((o, i) =>
+        `<button data-k="${esc(o.key)}" id="opt${i}">${esc(o.title)}${o.description ? ` <span>${esc(o.description)}</span>` : ""}</button>`).join("")}
+      </div></div></div>`);
+    out.options.forEach((o, i) => {
+      $("opt" + i).onclick = async () => {
+        const d = await wikiSummary(o.key).catch(() => null);
+        if (d) showResult(name, { kind: "fact", title: d.title, extract: d.extract,
+                                  thumb: d.thumbnail ? d.thumbnail.source : null,
+                                  link: d.content_urls ? d.content_urls.desktop.page : null });
+      };
+    });
+
+  } else if (k === "timer") {
+    st.innerHTML = card(name, `${esc(out.minutes)} min`, `<div class="timer">
+      <div class="t" id="tt">--:--</div><div class="lab" id="tl">counting down</div></div>`);
+    let left = out.seconds;
+    const tick = () => {
+      const m = Math.floor(left / 60), sec = left % 60;
+      $("tt").textContent = `${m}:${String(sec).padStart(2, "0")}`;
+      if (left <= 0) { $("tl").textContent = "time"; playNotes(JINGLES.alarm);
+                       clearInterval(timer); timer = null; }
+      left--;
+    };
+    tick(); timer = setInterval(tick, 1000);
+
+  } else if (k === "tone") {
+    st.innerHTML = card(name, out.name, `<div class="tone">
+      <div class="bars">${Array.from({length:9},(_,i)=>
+        `<i style="animation-delay:${i*70}ms"></i>`).join("")}</div>
+      <div class="lab">playing ${esc(out.name)}</div></div>`);
+
+  } else if (k === "board") {
+    const up = Number(out.uptime_s || 0);
+    const hh = String(Math.floor(up / 3600)).padStart(2, "0");
+    const mm = String(Math.floor(up % 3600 / 60)).padStart(2, "0");
+    const ss = String(up % 60).padStart(2, "0");
+    st.innerHTML = card(name, "the device itself", `<div class="board">
+      <div class="t">${hh}:${mm}:${ss}</div><div class="lab">uptime</div>
+      <dl><dt>model</dt><dd>${esc(out.model)}, ${esc(out.weights_mib)} MiB</dd>
+          <dt>address</dt><dd>${esc(out.ip)}</dd>
+          <dt>psram free</dt><dd>${esc(out.psram_free_kb)} KB</dd>
+          <dt>sram free</dt><dd>${esc(out.internal_free_kb)} KB</dd>
+          <dt>cpu</dt><dd>${esc(out.cpu_mhz)} MHz dual RISC-V</dd>
+          <dt>self-tests</dt><dd>${(out.banner||[]).filter(l=>l.includes("PASS")).length} passing</dd>
+      </dl></div>`);
+
+  } else if (name === "no tool call") {
+    st.innerHTML = card("nothing here fits", "", `<div class="plain">
+      Nothing here fits that — the model declined to pick a tool.</div>`);
+  } else if (name === "tool failed") {
+    st.innerHTML = card("tool failed", "", `<div class="plain">
+      tool failed: ${esc(out && out.message ? out.message : "unknown error")}</div>`);
+  } else {
+    st.innerHTML = card(name, "no runtime here", `<div class="plain">
+      The model chose <code>${esc(name)}</code> and filled in the arguments. Nothing on
+      this page implements it. Register a handler and it runs.</div>`);
+  }
+}
+
+function showMethod(r, runMs, ranName) {
+  const s = r.stats;
+  $("pipe").innerHTML = [
+    ["browser", "tokenize", `${s.promptTokens} ids · ${s.tokenizeMs.toFixed(1)} ms`],
+    ["board", "encode + generate", `${(s.encMs / 1000).toFixed(2)} s + ${s.generatedTokens}×${s.tokMs.toFixed(0)} ms`],
+    ["browser", "detokenize", `${s.detokenizeMs.toFixed(1)} ms`],
+    ["net", ranName || "tool", runMs == null ? "not run" : `${runMs.toFixed(0)} ms`],
+  ].map(([w, what, val]) =>
+    `<div class="stg"><span class="w ${w}">${w}</span>${what}<br><b>${val}</b></div>`).join("");
+
+  $("metrics").innerHTML = [
+    ["encoder", s.encMs.toFixed(0), "ms"],
+    ["per token", s.tokMs.toFixed(1), "ms"],
+    ["prompt", s.promptTokens, "tokens"],
+    ["generated", s.generatedTokens, "tokens"],
+    ["round trip", (s.boardMs / 1000).toFixed(1), "s"],
+  ].map(([k, v, u]) => `<div class="metric"><dt>${k}</dt><dd>${v} <small>${u}</small></dd></div>`).join("");
+
+  $("rawcall").textContent = r.jsonOk ? JSON.stringify(r.parsed, null, 2) : r.text;
+
+  // the exact schema needle/train/finetune.py reads: query, tools, answers,
+  // with tools and answers as compact JSON *strings*
+  let toolsVal = [];
+  try { toolsVal = JSON.parse($("tools").value || "[]"); } catch {}
+  $("jsonl").textContent = JSON.stringify({
+    query: $("query").value.trim(),
+    tools: JSON.stringify(toolsVal),
+    answers: r.jsonOk ? JSON.stringify(r.parsed) : "[]",
+  });
+  $("ids").innerHTML = `<b>in (${r.ids.length}):</b> ${esc(r.ids.join(" "))}<br><br>` +
+                       `<b>out (${r.genIds.length}):</b> ${esc(r.genIds.join(" "))}`;
+}
+
+async function refresh() {
+  try {
+    const s = await N.status();
+    $("dot").className = "dot ok";
+    $("stat").textContent = `board ready · ESP32-P4 at ${s.ip || "?"}`;
+  } catch {
+    $("dot").className = "dot bad";
+    $("stat").textContent = "board unreachable";
+  }
+}
+
+(async () => {
+  try {
+    N = await Needle.connect();
+    registerTools(N);
+    $("run").disabled = false;
+    refresh();
+  } catch (e) {
+    $("errbox").innerHTML = `<div class="err">${esc(e.message)}</div>`;
+    $("dot").className = "dot bad";
+    $("stat").textContent = "could not load the vocabulary";
+  }
+})();
+
+$("copyjsonl").onclick = () => {
+  navigator.clipboard.writeText($("jsonl").textContent).then(() => {
+    const b = $("copyjsonl"); b.textContent = "copied"; setTimeout(() => b.textContent = "copy line", 1400);
+  });
+};
+
+$("run").onclick = async () => {
+  warmAudio();               /* inside the gesture, before any await */
+  const btn = $("run");
+  btn.disabled = true;
+  $("errbox").innerHTML = "";
+  $("stage").innerHTML = "";
+  workerStart();
+
+  try {
+    /* Catalogue source of truth is ALL (the six demo tools). Retrieval prunes
+     * a copy before encode; the textarea is updated to show what was sent. */
+    let tools = ALL.slice();
+    const retrOn = $("retr_on").checked;
+    const k = parseInt($("retr_k").value, 10) || 2;
+    const q = $("query").value;
+    if (retrOn) {
+      const scored = scoreAll(q, tools);
+      tools = selectTools(q, tools, k);
+      const names = tools.map(t => t.name);
+      const fellBack = tools.length === ALL.length && scored[0] && scored[0][0] < 2;
+      /* Show which tools were sent; raw lexical scores stay out of the main form */
+      $("retr_info").innerHTML = fellBack
+        ? `OOD fallback · sent all <b>${tools.length}</b> tools`
+        : `sent <b>${names.join(", ")}</b> (${names.length}/${ALL.length})`;
+    } else {
+      $("retr_info").textContent = `retrieval off · sends all ${ALL.length} tools`;
+    }
+    $("tools").value = JSON.stringify(tools, null, 2);
+
+    const r = await N.call(q, tools);
+    /* Board answered — recover status if a prior run had marked it unreachable */
+    refresh();
+    if (!r.isToolCall) { showResult("no tool call", null); showMethod(r, null, null); return; }
+
+    const label = r.originalName || r.call.name;
+    let out = null, runMs = null, runErr = null;
+    if (N.has(r.call.name)) {
+      const t = performance.now();
+      try {
+        out = await N.run(r.call);
+      } catch (e) {
+        runErr = e;
+        $("errbox").innerHTML = `<div class="err">${esc(label)} failed: ${esc(e.message)}</div>`;
+      }
+      runMs = performance.now() - t;
+    }
+    /* Runtime failure is not "no runtime here" — show a dedicated failure card */
+    if (runErr) showResult("tool failed", { message: `${label}: ${runErr.message}` });
+    else showResult(label, out);
+    showMethod(r, runMs, label);
+  } catch (e) {
+    $("errbox").innerHTML = `<div class="err">${esc(e.message)}</div>`;
+    $("dot").className = "dot bad";
+    $("stat").textContent = "board unreachable";
+  } finally {
+    workerStop();
+    btn.disabled = false;
+  }
+};
+</script>
+</body>
+</html>

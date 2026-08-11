@@ -1,0 +1,43 @@
+# Host-side gates only. No board, no upstream Needle checkout.
+#
+# Skipped (and why):
+#   - ./verify.sh --pack
+#       Needs $NEEDLE_HOME (model.safetensors / checkpoint). CI downloads
+#       pre-packed .npk from Releases instead.
+#   - tools/run_board_fixtures.py
+#       Needs the ESP32-P4 on a serial port; not available in ubuntu-latest.
+#   - tools/eval_tools.py (and other tools/* eval / ablate scripts)
+#       Separate post-finetune gates, not part of ./verify.sh's host path.
+name: verify
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  host:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install host deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc python3 python3-pip nodejs
+          python3 -m pip install numpy
+
+      - name: Fetch packed weights (sha256-verified)
+        env:
+          # TODO: replace with the real GitHub Releases download base, e.g.
+          #   https://github.com/OWNER/REPO/releases/download/v0.1.0
+          # Until that exists, this step fails on a clean runner (by design).
+          # Locally: ./tools/get_weights.sh --from-dir /path/to/npks
+          RELEASES_BASE_URL: "https://github.com/TODO-OWNER/TODO-REPO/releases/download/TODO-TAG"
+        run: |
+          export RELEASES_BASE_URL="${RELEASES_BASE_URL}"
+          ./tools/get_weights.sh
+
+      - name: Host gates (weights alone)
+        # Mirrors ./verify.sh stages that need only the tree + weights/*.npk
+        # (and node/numpy already installed above). No --pack, no board.
+        run: ./verify.sh

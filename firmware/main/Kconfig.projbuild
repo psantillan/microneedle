@@ -1,0 +1,18 @@
+menu "Needle"
+
+config NEEDLE_WEB_UI
+    bool "Serve the built-in web demo"
+    default y
+    help
+        Embed the demo page, its tokenizer and the 8192-entry vocabulary into
+        the app image (about 72 KB gzipped) and serve them from "/".
+
+        Leave this on for the out-of-the-box experience: flash the board, open
+        its address, ask it something.
+
+        Turn it off for an API-only build. The board still answers
+        POST /api/tokens and GET /api/status, and it still runs the model; it
+        just stops serving a front end. Clients tokenize on their side, which
+        is what demos/ shows.
+
+endmenu

@@ -1,0 +1,2123 @@
+{
+  "full6": {
+    "name_acc": 35,
+    "n": 36,
+    "recall": 36,
+    "mean_enc": 250.0,
+    "divs": [
+      {
+        "cid": "brd03",
+        "q": "What chip are you running on?",
+        "want": "board_status",
+        "got": "play_tone",
+        "hit": false,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 251,
+        "raw": "[{\"name\":\"play_tone\",\"arguments\":{\"sound\":\"chime\"}}]"
+      }
+    ],
+    "per": [
+      {
+        "cid": "aud00",
+        "q": "Play a chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 247
+      },
+      {
+        "cid": "aud01",
+        "q": "play the alarm sound",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 247
+      },
+      {
+        "cid": "aud02",
+        "q": "make a success noise",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 248
+      },
+      {
+        "cid": "aud03",
+        "q": "sound the alarm",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 246
+      },
+      {
+        "cid": "aud04",
+        "q": "Play a success",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 247
+      },
+      {
+        "cid": "aud05",
+        "q": "make a chime noise",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 248
+      },
+      {
+        "cid": "aud06",
+        "q": "Play an alarm",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 246
+      },
+      {
+        "cid": "aud07",
+        "q": "sound the chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 247
+      },
+      {
+        "cid": "wea00",
+        "q": "What's the weather in Oslo?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 253
+      },
+      {
+        "cid": "wea01",
+        "q": "weather in San Diego",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 250
+      },
+      {
+        "cid": "wea02",
+        "q": "Is it raining in London?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 251
+      },
+      {
+        "cid": "wea03",
+        "q": "How hot is it in Phoenix?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 255
+      },
+      {
+        "cid": "sun00",
+        "q": "When does the sun set in Reykjavik?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 257
+      },
+      {
+        "cid": "sun01",
+        "q": "sunrise time in Tokyo",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 247
+      },
+      {
+        "cid": "sun02",
+        "q": "When is sunset in Lisbon?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 252
+      },
+      {
+        "cid": "sun03",
+        "q": "golden hour in Denver",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 251
+      },
+      {
+        "cid": "lok00",
+        "q": "Tell me about tardigrades",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 251
+      },
+      {
+        "cid": "lok01",
+        "q": "look up the Antikythera mechanism",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 254
+      },
+      {
+        "cid": "lok02",
+        "q": "What is a quasar?",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 250
+      },
+      {
+        "cid": "lok03",
+        "q": "Who was Ada Lovelace?",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 253
+      },
+      {
+        "cid": "tim00",
+        "q": "Set a timer for 5 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 249
+      },
+      {
+        "cid": "tim01",
+        "q": "start a 20 minute timer",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 248
+      },
+      {
+        "cid": "tim02",
+        "q": "countdown 3 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 246
+      },
+      {
+        "cid": "tim03",
+        "q": "timer for half an hour",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 249
+      },
+      {
+        "cid": "brd00",
+        "q": "How long have you been running?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 250
+      },
+      {
+        "cid": "brd01",
+        "q": "board status",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 245
+      },
+      {
+        "cid": "brd02",
+        "q": "How much memory is free?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 249
+      },
+      {
+        "cid": "brd03",
+        "q": "What chip are you running on?",
+        "want": "board_status",
+        "got": "play_tone",
+        "hit": false,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 251
+      },
+      {
+        "cid": "poem00",
+        "q": "Write me a poem about the sea",
+        "want": null,
+        "got": null,
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 253
+      },
+      {
+        "cid": "eval_wea",
+        "q": "What's the weather in Oslo?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 253
+      },
+      {
+        "cid": "eval_sun",
+        "q": "When does the sun set in Reykjavik?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 257
+      },
+      {
+        "cid": "eval_lok",
+        "q": "Tell me about tardigrades",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 251
+      },
+      {
+        "cid": "eval_tim",
+        "q": "Set a timer for 5 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 249
+      },
+      {
+        "cid": "eval_aud",
+        "q": "Play a chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 247
+      },
+      {
+        "cid": "eval_brd",
+        "q": "How long have you been running?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 250
+      },
+      {
+        "cid": "eval_poem",
+        "q": "Write me a poem about the sea",
+        "want": null,
+        "got": null,
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 253
+      }
+    ]
+  },
+  "k1": {
+    "name_acc": 36,
+    "n": 36,
+    "recall": 36,
+    "mean_enc": 76.94444444444444,
+    "divs": [],
+    "per": [
+      {
+        "cid": "aud00",
+        "q": "Play a chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone"
+        ],
+        "n_enc": 52
+      },
+      {
+        "cid": "aud01",
+        "q": "play the alarm sound",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "set_timer"
+        ],
+        "n_enc": 91
+      },
+      {
+        "cid": "aud02",
+        "q": "make a success noise",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone"
+        ],
+        "n_enc": 53
+      },
+      {
+        "cid": "aud03",
+        "q": "sound the alarm",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "set_timer"
+        ],
+        "n_enc": 90
+      },
+      {
+        "cid": "aud04",
+        "q": "Play a success",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone"
+        ],
+        "n_enc": 52
+      },
+      {
+        "cid": "aud05",
+        "q": "make a chime noise",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone"
+        ],
+        "n_enc": 53
+      },
+      {
+        "cid": "aud06",
+        "q": "Play an alarm",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "set_timer"
+        ],
+        "n_enc": 90
+      },
+      {
+        "cid": "aud07",
+        "q": "sound the chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone"
+        ],
+        "n_enc": 52
+      },
+      {
+        "cid": "wea00",
+        "q": "What's the weather in Oslo?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather"
+        ],
+        "n_enc": 52
+      },
+      {
+        "cid": "wea01",
+        "q": "weather in San Diego",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather"
+        ],
+        "n_enc": 49
+      },
+      {
+        "cid": "wea02",
+        "q": "Is it raining in London?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather"
+        ],
+        "n_enc": 50
+      },
+      {
+        "cid": "wea03",
+        "q": "How hot is it in Phoenix?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather"
+        ],
+        "n_enc": 54
+      },
+      {
+        "cid": "sun00",
+        "q": "When does the sun set in Reykjavik?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "set_timer"
+        ],
+        "n_enc": 100
+      },
+      {
+        "cid": "sun01",
+        "q": "sunrise time in Tokyo",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times"
+        ],
+        "n_enc": 51
+      },
+      {
+        "cid": "sun02",
+        "q": "When is sunset in Lisbon?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times"
+        ],
+        "n_enc": 56
+      },
+      {
+        "cid": "sun03",
+        "q": "golden hour in Denver",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times"
+        ],
+        "n_enc": 55
+      },
+      {
+        "cid": "lok00",
+        "q": "Tell me about tardigrades",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up"
+        ],
+        "n_enc": 51
+      },
+      {
+        "cid": "lok01",
+        "q": "look up the Antikythera mechanism",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up"
+        ],
+        "n_enc": 54
+      },
+      {
+        "cid": "lok02",
+        "q": "What is a quasar?",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 250
+      },
+      {
+        "cid": "lok03",
+        "q": "Who was Ada Lovelace?",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up"
+        ],
+        "n_enc": 53
+      },
+      {
+        "cid": "tim00",
+        "q": "Set a timer for 5 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer",
+          "get_sun_times"
+        ],
+        "n_enc": 92
+      },
+      {
+        "cid": "tim01",
+        "q": "start a 20 minute timer",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer",
+          "get_sun_times"
+        ],
+        "n_enc": 91
+      },
+      {
+        "cid": "tim02",
+        "q": "countdown 3 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer"
+        ],
+        "n_enc": 44
+      },
+      {
+        "cid": "tim03",
+        "q": "timer for half an hour",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "set_timer"
+        ],
+        "n_enc": 92
+      },
+      {
+        "cid": "brd00",
+        "q": "How long have you been running?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status"
+        ],
+        "n_enc": 39
+      },
+      {
+        "cid": "brd01",
+        "q": "board status",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status"
+        ],
+        "n_enc": 34
+      },
+      {
+        "cid": "brd02",
+        "q": "How much memory is free?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status"
+        ],
+        "n_enc": 38
+      },
+      {
+        "cid": "brd03",
+        "q": "What chip are you running on?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status"
+        ],
+        "n_enc": 40
+      },
+      {
+        "cid": "poem00",
+        "q": "Write me a poem about the sea",
+        "want": null,
+        "got": null,
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 253
+      },
+      {
+        "cid": "eval_wea",
+        "q": "What's the weather in Oslo?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather"
+        ],
+        "n_enc": 52
+      },
+      {
+        "cid": "eval_sun",
+        "q": "When does the sun set in Reykjavik?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "set_timer"
+        ],
+        "n_enc": 100
+      },
+      {
+        "cid": "eval_lok",
+        "q": "Tell me about tardigrades",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up"
+        ],
+        "n_enc": 51
+      },
+      {
+        "cid": "eval_tim",
+        "q": "Set a timer for 5 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer",
+          "get_sun_times"
+        ],
+        "n_enc": 92
+      },
+      {
+        "cid": "eval_aud",
+        "q": "Play a chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone"
+        ],
+        "n_enc": 52
+      },
+      {
+        "cid": "eval_brd",
+        "q": "How long have you been running?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status"
+        ],
+        "n_enc": 39
+      },
+      {
+        "cid": "eval_poem",
+        "q": "Write me a poem about the sea",
+        "want": null,
+        "got": null,
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 253
+      }
+    ]
+  },
+  "k2": {
+    "name_acc": 36,
+    "n": 36,
+    "recall": 36,
+    "mean_enc": 99.02777777777777,
+    "divs": [],
+    "per": [
+      {
+        "cid": "aud00",
+        "q": "Play a chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 82
+      },
+      {
+        "cid": "aud01",
+        "q": "play the alarm sound",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "set_timer"
+        ],
+        "n_enc": 91
+      },
+      {
+        "cid": "aud02",
+        "q": "make a success noise",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 83
+      },
+      {
+        "cid": "aud03",
+        "q": "sound the alarm",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "set_timer"
+        ],
+        "n_enc": 90
+      },
+      {
+        "cid": "aud04",
+        "q": "Play a success",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 82
+      },
+      {
+        "cid": "aud05",
+        "q": "make a chime noise",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 83
+      },
+      {
+        "cid": "aud06",
+        "q": "Play an alarm",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "set_timer"
+        ],
+        "n_enc": 90
+      },
+      {
+        "cid": "aud07",
+        "q": "sound the chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 82
+      },
+      {
+        "cid": "wea00",
+        "q": "What's the weather in Oslo?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "board_status"
+        ],
+        "n_enc": 82
+      },
+      {
+        "cid": "wea01",
+        "q": "weather in San Diego",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "board_status"
+        ],
+        "n_enc": 79
+      },
+      {
+        "cid": "wea02",
+        "q": "Is it raining in London?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "board_status"
+        ],
+        "n_enc": 80
+      },
+      {
+        "cid": "wea03",
+        "q": "How hot is it in Phoenix?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "board_status"
+        ],
+        "n_enc": 84
+      },
+      {
+        "cid": "sun00",
+        "q": "When does the sun set in Reykjavik?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "set_timer"
+        ],
+        "n_enc": 100
+      },
+      {
+        "cid": "sun01",
+        "q": "sunrise time in Tokyo",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "board_status"
+        ],
+        "n_enc": 81
+      },
+      {
+        "cid": "sun02",
+        "q": "When is sunset in Lisbon?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "board_status"
+        ],
+        "n_enc": 86
+      },
+      {
+        "cid": "sun03",
+        "q": "golden hour in Denver",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "board_status"
+        ],
+        "n_enc": 85
+      },
+      {
+        "cid": "lok00",
+        "q": "Tell me about tardigrades",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up",
+          "board_status"
+        ],
+        "n_enc": 81
+      },
+      {
+        "cid": "lok01",
+        "q": "look up the Antikythera mechanism",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up",
+          "board_status"
+        ],
+        "n_enc": 84
+      },
+      {
+        "cid": "lok02",
+        "q": "What is a quasar?",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 250
+      },
+      {
+        "cid": "lok03",
+        "q": "Who was Ada Lovelace?",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up",
+          "board_status"
+        ],
+        "n_enc": 83
+      },
+      {
+        "cid": "tim00",
+        "q": "Set a timer for 5 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer",
+          "get_sun_times"
+        ],
+        "n_enc": 92
+      },
+      {
+        "cid": "tim01",
+        "q": "start a 20 minute timer",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer",
+          "get_sun_times"
+        ],
+        "n_enc": 91
+      },
+      {
+        "cid": "tim02",
+        "q": "countdown 3 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer",
+          "board_status"
+        ],
+        "n_enc": 74
+      },
+      {
+        "cid": "tim03",
+        "q": "timer for half an hour",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "set_timer"
+        ],
+        "n_enc": 92
+      },
+      {
+        "cid": "brd00",
+        "q": "How long have you been running?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 84
+      },
+      {
+        "cid": "brd01",
+        "q": "board status",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 79
+      },
+      {
+        "cid": "brd02",
+        "q": "How much memory is free?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 83
+      },
+      {
+        "cid": "brd03",
+        "q": "What chip are you running on?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 85
+      },
+      {
+        "cid": "poem00",
+        "q": "Write me a poem about the sea",
+        "want": null,
+        "got": null,
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 253
+      },
+      {
+        "cid": "eval_wea",
+        "q": "What's the weather in Oslo?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "board_status"
+        ],
+        "n_enc": 82
+      },
+      {
+        "cid": "eval_sun",
+        "q": "When does the sun set in Reykjavik?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "set_timer"
+        ],
+        "n_enc": 100
+      },
+      {
+        "cid": "eval_lok",
+        "q": "Tell me about tardigrades",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up",
+          "board_status"
+        ],
+        "n_enc": 81
+      },
+      {
+        "cid": "eval_tim",
+        "q": "Set a timer for 5 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer",
+          "get_sun_times"
+        ],
+        "n_enc": 92
+      },
+      {
+        "cid": "eval_aud",
+        "q": "Play a chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 82
+      },
+      {
+        "cid": "eval_brd",
+        "q": "How long have you been running?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 84
+      },
+      {
+        "cid": "eval_poem",
+        "q": "Write me a poem about the sea",
+        "want": null,
+        "got": null,
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 253
+      }
+    ]
+  },
+  "k3": {
+    "name_acc": 36,
+    "n": 36,
+    "recall": 36,
+    "mean_enc": 135.41666666666666,
+    "divs": [],
+    "per": [
+      {
+        "cid": "aud00",
+        "q": "Play a chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 127
+      },
+      {
+        "cid": "aud01",
+        "q": "play the alarm sound",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "set_timer",
+          "board_status"
+        ],
+        "n_enc": 121
+      },
+      {
+        "cid": "aud02",
+        "q": "make a success noise",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 128
+      },
+      {
+        "cid": "aud03",
+        "q": "sound the alarm",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "set_timer",
+          "board_status"
+        ],
+        "n_enc": 120
+      },
+      {
+        "cid": "aud04",
+        "q": "Play a success",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 127
+      },
+      {
+        "cid": "aud05",
+        "q": "make a chime noise",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 128
+      },
+      {
+        "cid": "aud06",
+        "q": "Play an alarm",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "set_timer",
+          "board_status"
+        ],
+        "n_enc": 120
+      },
+      {
+        "cid": "aud07",
+        "q": "sound the chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 127
+      },
+      {
+        "cid": "wea00",
+        "q": "What's the weather in Oslo?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 127
+      },
+      {
+        "cid": "wea01",
+        "q": "weather in San Diego",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 124
+      },
+      {
+        "cid": "wea02",
+        "q": "Is it raining in London?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 125
+      },
+      {
+        "cid": "wea03",
+        "q": "How hot is it in Phoenix?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 129
+      },
+      {
+        "cid": "sun00",
+        "q": "When does the sun set in Reykjavik?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "set_timer",
+          "board_status"
+        ],
+        "n_enc": 130
+      },
+      {
+        "cid": "sun01",
+        "q": "sunrise time in Tokyo",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "board_status",
+          "get_weather"
+        ],
+        "n_enc": 121
+      },
+      {
+        "cid": "sun02",
+        "q": "When is sunset in Lisbon?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "board_status",
+          "get_weather"
+        ],
+        "n_enc": 126
+      },
+      {
+        "cid": "sun03",
+        "q": "golden hour in Denver",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "board_status",
+          "get_weather"
+        ],
+        "n_enc": 125
+      },
+      {
+        "cid": "lok00",
+        "q": "Tell me about tardigrades",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 126
+      },
+      {
+        "cid": "lok01",
+        "q": "look up the Antikythera mechanism",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 129
+      },
+      {
+        "cid": "lok02",
+        "q": "What is a quasar?",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 250
+      },
+      {
+        "cid": "lok03",
+        "q": "Who was Ada Lovelace?",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 128
+      },
+      {
+        "cid": "tim00",
+        "q": "Set a timer for 5 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer",
+          "get_sun_times",
+          "board_status"
+        ],
+        "n_enc": 122
+      },
+      {
+        "cid": "tim01",
+        "q": "start a 20 minute timer",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer",
+          "get_sun_times",
+          "board_status"
+        ],
+        "n_enc": 121
+      },
+      {
+        "cid": "tim02",
+        "q": "countdown 3 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 119
+      },
+      {
+        "cid": "tim03",
+        "q": "timer for half an hour",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "set_timer",
+          "board_status"
+        ],
+        "n_enc": 122
+      },
+      {
+        "cid": "brd00",
+        "q": "How long have you been running?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status",
+          "get_sun_times",
+          "get_weather"
+        ],
+        "n_enc": 124
+      },
+      {
+        "cid": "brd01",
+        "q": "board status",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status",
+          "get_sun_times",
+          "get_weather"
+        ],
+        "n_enc": 119
+      },
+      {
+        "cid": "brd02",
+        "q": "How much memory is free?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status",
+          "get_sun_times",
+          "get_weather"
+        ],
+        "n_enc": 123
+      },
+      {
+        "cid": "brd03",
+        "q": "What chip are you running on?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status",
+          "get_sun_times",
+          "get_weather"
+        ],
+        "n_enc": 125
+      },
+      {
+        "cid": "poem00",
+        "q": "Write me a poem about the sea",
+        "want": null,
+        "got": null,
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 253
+      },
+      {
+        "cid": "eval_wea",
+        "q": "What's the weather in Oslo?",
+        "want": "get_weather",
+        "got": "get_weather",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 127
+      },
+      {
+        "cid": "eval_sun",
+        "q": "When does the sun set in Reykjavik?",
+        "want": "get_sun_times",
+        "got": "get_sun_times",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_sun_times",
+          "set_timer",
+          "board_status"
+        ],
+        "n_enc": 130
+      },
+      {
+        "cid": "eval_lok",
+        "q": "Tell me about tardigrades",
+        "want": "look_up",
+        "got": "look_up",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "look_up",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 126
+      },
+      {
+        "cid": "eval_tim",
+        "q": "Set a timer for 5 minutes",
+        "want": "set_timer",
+        "got": "set_timer",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "set_timer",
+          "get_sun_times",
+          "board_status"
+        ],
+        "n_enc": 122
+      },
+      {
+        "cid": "eval_aud",
+        "q": "Play a chime",
+        "want": "play_tone",
+        "got": "play_tone",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "play_tone",
+          "board_status",
+          "get_sun_times"
+        ],
+        "n_enc": 127
+      },
+      {
+        "cid": "eval_brd",
+        "q": "How long have you been running?",
+        "want": "board_status",
+        "got": "board_status",
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "board_status",
+          "get_sun_times",
+          "get_weather"
+        ],
+        "n_enc": 124
+      },
+      {
+        "cid": "eval_poem",
+        "q": "Write me a poem about the sea",
+        "want": null,
+        "got": null,
+        "hit": true,
+        "recall": true,
+        "tools": [
+          "get_weather",
+          "get_sun_times",
+          "look_up",
+          "set_timer",
+          "play_tone",
+          "board_status"
+        ],
+        "n_enc": 253
+      }
+    ]
+  },
+  "_meta": {
+    "mutation_pass": true,
+    "twin_pass": true,
+    "full6_mean_enc": 250.0
+  }
+}

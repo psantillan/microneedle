@@ -1,0 +1,14 @@
+weights/*.npk
+engine/needle_host
+engine/needle_pie
+engine/needle_i8
+engine/needle_trace
+engine/needle_i8_trace
+engine/bench_grammar
+engine/needle_warmschema
+__pycache__/
+build/
+engine/needle_ask
+weights/*.pkl
+sdkconfig.old
+analysis/
