@@ -74,7 +74,7 @@ esptool.py --chip esp32p4 -p /dev/ttyACM1 -b 921600 \
 
 ---
 
-## Hard-won warnings (read before you trust a number)
+## Warnings
 
 **The trainer's own eval is misleading.** Its checkpoint score uses a different
 generation path from the board. **Only the packed artifact scored by
