@@ -10,8 +10,7 @@ the browser executes it. Routing is a measured copy mechanism: rename a tool
 in the schema and the model emits the new name.
 
 The model is [Cactus Compute's Needle](https://github.com/cactus-compute/needle),
-the 26M "v3" checkpoint (upstream commit ffb1c51; their newer Needle 2 is a
-different architecture). It is an encoder-decoder with 12 encoder layers,
+the 26M "v3" checkpoint (upstream commit ffb1c51). It is an encoder-decoder with 12 encoder layers,
 8 decoder layers, `d_model` 512, and no feed-forward network. That is why
 26M parameters fit in 14.66 MiB.
 This repository is an independent C99 + RISC-V vector-assembly port of its
@@ -24,7 +23,7 @@ forward pass, the firmware that serves it, and the measurement harness.
 | Demo round trip, retrieval-pruned prompt | **2.81 s** |
 | Full six-tool prompt | 5.81 s cold, **5.6 s** with the warm schema cache |
 | Prefill, 271 tokens | 5.41 s ("prefill" = reading the prompt before the first output token) |
-| Decode | **89–108 ms/token** |
+| Decode | **9–11 tokens/s** (89–108 ms/token) |
 | Weights resident | **14.66 MiB** (int4 projections, int8 embedding) |
 | Reference config (int16) | prefill 0.38 s @22 / 0.73 s @48 / 5.9 s @271 tokens, **8/8 fixtures token-identical** |
 
