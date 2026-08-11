@@ -10,9 +10,8 @@ Every `.npk` listed here is an **MIT derivative** of the upstream
 [cactus-compute/needle](https://github.com/cactus-compute/needle) model
 weights (MIT; see `THIRD_PARTY_NOTICES.md` and the upstream `LICENSE`).
 Base packs quantize and repack those checkpoints. Fine-tuned packs start from
-the same base and continue training on synthetic tool-routing data generated
-by `train/make_dataset.py` in this repository, then pack the resulting
-checkpoint with `tools/pack_npk.py`.
+the same base, train on synthetic tool-routing data from
+`train/make_dataset.py`, and pack with `tools/pack_npk.py`.
 
 ## Per-artifact provenance
 
@@ -36,8 +35,8 @@ are scored against.
 
 ### Fine-tuned variants (synthetic data from `train/make_dataset.py`)
 
-Trained on tool-routing JSONL produced by `train/make_dataset.py` (six demo
-tools: `get_weather`, `get_sun_times`, `look_up`, `set_timer`, `play_tone`,
+Trained on tool-routing JSONL from `train/make_dataset.py` (six demo tools:
+`get_weather`, `get_sun_times`, `look_up`, `set_timer`, `play_tone`,
 `board_status`), then packed with `--proj int4 --embed int8 --group 512`.
 
 | File | Size | Provenance | SHA-256 |
@@ -47,8 +46,8 @@ tools: `get_weather`, `get_sun_times`, `look_up`, `set_timer`, `play_tone`,
 
 ## Related non-pack files under `weights/`
 
-These are **not** model weight packs; they are small fixtures checked into
-the repo for gates and do not need release downloads:
+Small fixtures checked into the repo for gates; not model weight packs and not
+release downloads:
 
 - `vectors_int4p_int8e.txt` — host parity vector set
 - `reference_int4p_int8e.json` — oracle dump used to build the vectors
@@ -66,11 +65,8 @@ the repo for gates and do not need release downloads:
 
 Upstream’s public git repository does **not** contain `model.safetensors`
 (or other checkpoints): their `.gitignore` excludes `checkpoints/`. Packing
-weights yourself from upstream therefore requires obtaining their checkpoint
-by some other means (for example the upstream Hugging Face weight drop or a
-local training run). A Release download of a `.npk` from this project needs
-nothing from upstream — the pack is already quantized and ready to flash or
-to load with the host engine.
+from upstream requires their checkpoint by other means (Hugging Face weight
+drop or a local training run). A Release `.npk` needs nothing from upstream.
 
 | Artifact | Download URL |
 |---|---|

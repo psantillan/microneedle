@@ -1,8 +1,8 @@
 # demos
 
-Ask the model something and watch it pick a tool. Works with no hardware at
-all — `ask.py` runs the same scalar engine build the parity fixtures certify —
-or against a live board with `--host`.
+Ask the model something and watch it pick a tool. `ask.py` runs the same
+scalar engine build the parity fixtures certify. No hardware needed; use
+`--host` against a live board.
 
 ## No hardware
 
@@ -25,8 +25,8 @@ $ python3 demos/ask.py "Write me a poem about the sea"
 Needs `weights/needle_tools_g512.npk` (see `WEIGHTS.md`; override with
 `--npk`). The engine binary builds itself on first run.
 
-Bring your own tools — the model routes by reading the schema at inference
-time, so tools it never saw in training work too:
+Bring your own tools. The model routes by reading the schema at inference
+time:
 
 ```
 $ python3 demos/ask.py --tools my_tools.json "email bob@example.com"
@@ -35,8 +35,7 @@ $ python3 demos/ask.py --tools my_tools.json "email bob@example.com"
 ```
 
 (`my_tools.json` is a JSON list of tool specs: name, description, JSON-schema
-parameters. `--tools get_weather,play_tone` offers a subset of the six built-ins
-instead — smaller prompt, faster answer.)
+parameters. `--tools get_weather,play_tone` offers a subset of the six built-ins.)
 
 ## Against a board
 
@@ -46,9 +45,8 @@ python3 demos/ask.py --host <board-ip> --list          # status and boot self-te
 ```
 
 `ask.py` is the whole integration in one file: build the prompt, POST token
-ids, decode the reply, run the tool the model named. The board exposes two
-endpoints and nothing else, so it works against an API-only build
-(`CONFIG_NEEDLE_WEB_UI=n`):
+ids, decode the reply, run the tool the model named. Works against an API-only
+build (`CONFIG_NEEDLE_WEB_UI=n`); the board exposes two endpoints:
 
 ```
 POST /api/tokens   {"ids": [...]}   ->  {"gen_ids": [...], "enc_ms", "tok_ms"}
@@ -58,6 +56,6 @@ GET  /api/status                    ->  uptime, memory, boot self-tests
 Tool specs come from `train/make_dataset.py` (what the model was trained on);
 the Python functions that execute them are the `RUNTIMES` dict at the top of
 `ask.py`. Add yours there. Routing is most reliable for tools the model was
-fine-tuned on — see `docs/finetuning.md`.
+fine-tuned on. See `docs/finetuning.md`.
 
 For the browser equivalent, `web/needle.js` is the same idea in JavaScript.

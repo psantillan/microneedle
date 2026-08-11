@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-command fine-tune loop for MicroNeedle:
+# One-command MicroNeedle fine-tune loop:
 #   dataset -> needle.cli finetune -> pack .npk -> eval_tools.py
 #
 #   export NEEDLE_HOME=~/needle   # required
@@ -9,8 +9,8 @@
 #   ./tools/finetune.sh --jsonl path/to/data.jsonl
 #   OUT=weights/mine.npk EPOCHS=8 BATCH=4 PER_TOOL=200 ./tools/finetune.sh
 #
-# Preflight refuses to start if NEEDLE_HOME is unset/invalid, JAX cannot see a
-# GPU, or the training JSONL is missing after the dataset step.
+# Preflight requires a valid NEEDLE_HOME, a JAX-visible GPU, and a training
+# JSONL after the dataset step.
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"

@@ -1,12 +1,10 @@
 # The engineering notebook
 
-This directory is the complete, unedited log of the optimization program that
-took the board from 37 s prefill / 236 ms-per-token to the shipped numbers:
-every experiment, every measurement, and — deliberately — every rejection,
-each with the data that killed it. Files are working documents written during
-the runs they describe; they trade polish for fidelity. Start with
-`OPTIMIZATIONS.md` (the ledger: every optimization, its pipeline state, and
-its measured effect) and follow its references inward.
+This directory is the unedited optimization log that took the board from 37 s
+prefill / 236 ms-per-token to the shipped numbers. It includes every experiment,
+measurement, and rejection with its supporting data. These working documents
+were written during the runs. Start with `OPTIMIZATIONS.md` (every optimization,
+its pipeline state, and measured effect), then follow its references.
 
 Ledger and integration: `OPTIMIZATIONS.md` (state of every optimization),
 `INTEGRATION.md` (merge order, gate outputs, hazard checks).
@@ -21,8 +19,6 @@ evidence), `KERNEL-S8.md` (the s8 PIE kernel and its board checklist).
 Forward plans: `FINETUNE-NEXT.md` (the two training runs this data
 justifies), `PORTING.md` (memory ceiling and the portability boundary).
 
-A note on fidelity: these documents are the development log as written.
-Commit hashes, branch names, and session references in them belong to the
-pre-release private history and intentionally resolve to nothing here —
-they are retained because an edited lab notebook is worth less than an
-honest one.
+These documents are the development log as written. Commit hashes, branch
+names, and session references belong to the pre-release private history and
+intentionally resolve to nothing here. They preserve the original lab notebook.

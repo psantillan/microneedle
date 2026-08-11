@@ -1,14 +1,13 @@
 # Third-party notices
 
-This file records third-party material that MicroNeedle uses or derives from.
+Third-party material that MicroNeedle uses or derives from.
 MicroNeedle itself is MIT licensed; see `LICENSE`.
 
 ## cactus-compute/needle (as of upstream commit ffb1c51; the 26M encoder-decoder checkpoint) (MIT)
 
 Upstream project: [cactus-compute/needle](https://github.com/cactus-compute/needle).
 
-The upstream license text, verified from the upstream `LICENSE` file, is
-reproduced verbatim below.
+Upstream `LICENSE` text, reproduced verbatim:
 
 ```
 MIT License
@@ -44,21 +43,19 @@ SOFTWARE.
 | `tokenizer/vocab.txt` | Vocabulary / merge table derived from the upstream Needle tokenizer. |
 | All `.npk` weight artifacts under `weights/` | Packed (and, where noted, fine-tuned) derivatives of upstream Needle checkpoints. See `WEIGHTS.md`. |
 
-This repository is an independent port of the model’s forward pass and related
-tooling. It is not affiliated with or endorsed by Cactus Compute.
+Independent port of the model’s forward pass and related tooling. Not
+affiliated with or endorsed by Cactus Compute.
 
 ## Other third-party code in the tree
 
-A scan of this repository found **no other vendored third-party source trees**
-(no `vendor/`, `third_party/`, or similar bundled libraries). Runtime and
-build dependencies used by tools and firmware (for example NumPy, pyserial, and Espressif ESP-IDF) are obtained separately by the developer; they
-are not shipped as source in this tree.
+No other vendored third-party source trees (`vendor/`, `third_party/`, or
+similar). Runtime and build dependencies (NumPy, pyserial, ESP-IDF, etc.)
+are obtained separately; not shipped as source in this tree.
 
 ## External services used by the demo (not third-party code)
 
-The interactive demo (`web/index.html`, `demos/ask.py`) calls live HTTP APIs
-at runtime. These are **network services**, not code distributed with this
-repository:
+The interactive demo (`web/index.html`, `demos/ask.py`) calls these live HTTP
+APIs at runtime:
 
 | Service | Used for |
 |---|---|
@@ -66,5 +63,4 @@ repository:
 | [api.sunrisesunset.io](https://api.sunrisesunset.io) | Sunrise / sunset times (`get_sun_times`) |
 | [Wikipedia](https://en.wikipedia.org) (REST summary + MediaWiki API) | Fact lookups (`look_up`) |
 
-Their terms of use and rate limits apply to callers of the demo, not as
-license terms for MicroNeedle’s own source.
+Their terms of use and rate limits apply to demo callers.

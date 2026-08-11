@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Fetch and sha256-verify the three packed weight artifacts the host gates need.
+# Fetch and sha256-verify the three packed weight artifacts required by host gates.
 #
 # Usage:
 #   RELEASES_BASE_URL=https://github.com/OWNER/REPO/releases/download/TAG \
 #       ./tools/get_weights.sh
 #   ./tools/get_weights.sh --from-dir /path/to/dir   # offline copy + verify
 #
-# Artifacts land in weights/ next to this repo's root:
+# Artifacts go in weights/ at the repo root:
 #   needle_v3_g512.npk      base model (parity / board fixtures)
 #   needle_tools_g512.npk needle_runa_g512.npk   fine-tune on the six demo tools
 #

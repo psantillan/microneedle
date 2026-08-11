@@ -1,23 +1,21 @@
 # MicroNeedle
 
-![The demo, board-served: type a weather question, the on-device 26M model returns the tool call, and the browser fills a live weather card from wttr.in — tokenizing, tool retrieval and tool execution stay in the browser](docs/demo.gif)
+![Board-served demo answering a weather question](docs/demo.gif)
 [![verify](https://github.com/psantillan/microneedle/actions/workflows/verify.yml/badge.svg)](https://github.com/psantillan/microneedle/actions/workflows/verify.yml)
 
-A complete function-calling model answering in ~3 seconds from a ~$40
-microcontroller board that also serves its own demo page. You type a request
-in a browser; a 26M-parameter model running on the ESP32-P4 picks one of the
-offered tools, fills in its arguments, and your browser executes it. The
-routing is a measured copy mechanism, not memorization: rename a tool in the
-schema and the model emits the new name — it routes tools it never saw in
-training.
+A 26M function-calling model running on an ESP32-P4. It answers in ~3 seconds
+from a ~$40 board that also serves its own demo page. You type a request in a
+browser; the model picks one of the offered tools, fills in its arguments, and
+the browser executes it. Routing is a measured copy mechanism: rename a tool
+in the schema and the model emits the new name.
 
-The model is [Cactus Compute's Needle](https://github.com/cactus-compute/needle) (the 26M "v3" checkpoint; port tracks upstream commit ffb1c51 — upstream has since released Needle 2, a different architecture):
-an encoder–decoder "Simple Attention Network" — 12 encoder layers, 8 decoder
-layers, `d_model` 512, **no feed-forward network anywhere** — which is why 26M
-parameters fit in 14.66 MiB and do useful tool routing on a microcontroller.
+The model is [Cactus Compute's Needle](https://github.com/cactus-compute/needle),
+the 26M "v3" checkpoint (upstream commit ffb1c51; their newer Needle 2 is a
+different architecture). It is an encoder-decoder with 12 encoder layers,
+8 decoder layers, `d_model` 512, and no feed-forward network. That is why
+26M parameters fit in 14.66 MiB.
 This repository is an independent C99 + RISC-V vector-assembly port of its
-forward pass, the firmware that serves it, and the measurement harness that
-keeps every claim honest.
+forward pass, the firmware that serves it, and the measurement harness.
 
 ## Results (shipped configuration, measured on the board)
 
@@ -30,9 +28,9 @@ keeps every claim honest.
 | Weights resident | **14.66 MiB** (int4 projections, int8 embedding) |
 | Reference config (int16) | prefill 0.38 s @22 / 0.73 s @48 / 5.9 s @271 tokens, **8/8 fixtures token-identical** |
 
-How we know: the full engineering log lives in [`docs/notebook/`](docs/notebook/),
-the cache-behavior measurements in [`bench/gemm/README.md`](bench/gemm/README.md),
-and the per-head causal analysis in [`docs/HEADS.md`](docs/HEADS.md).
+Engineering log: [`docs/notebook/`](docs/notebook/). Cache measurements:
+[`bench/gemm/README.md`](bench/gemm/README.md). Per-head causal analysis:
+[`docs/HEADS.md`](docs/HEADS.md).
 
 ```mermaid
 flowchart LR
@@ -52,7 +50,7 @@ tools/get_weights.sh                 # fetch + sha256-verify the .npk artifacts 
 python3 demos/ask.py "What's the weather in Oslo?"
 ```
 
-Weights are distributed through GitHub Releases — `WEIGHTS.md` has provenance,
+Weights are distributed through GitHub Releases. `WEIGHTS.md` has provenance,
 licenses and checksums. Building them yourself needs an upstream Needle
 checkout *plus its checkpoint*, which upstream does not keep in git; the
 Release download needs nothing.
@@ -60,8 +58,7 @@ Release download needs nothing.
 ## Quickstart, with the board
 
 You need a Waveshare **ESP32-P4-WIFI6-POE-ETH** (dual RISC-V @ 360 MHz, 32 MB
-flash, 32 MB PSRAM — a development board, not a $3 part), ESP-IDF 5.4.2, and
-Ethernet.
+flash, 32 MB PSRAM), ESP-IDF 5.4.2, and Ethernet.
 
 ```
 . $IDF_PATH/export.sh
@@ -92,7 +89,7 @@ board's output token ids are compared byte-for-byte, three runs, against a
 reference. For the int16 configuration that reference is the JAX oracle
 itself. For shipped int8, the criterion is board-referenced: the board's own
 stable output (`weights/board_reference_i8.json`), three-run self-consistency,
-and a margin audit (`tools/margin_audit.py`): measured over the
+and a margin audit (`tools/margin_audit.py`). Measured over the
 retrieval-pruned prompts the demo actually sends, the smallest top-2 logit
 gap in 90 decision steps is 8.5 logits. On the full-schema acceptance
 fixtures, four steps sit under 1.0 logit, and exactly one (a 0.0097-logit
@@ -109,15 +106,14 @@ POST /api/tokens   {"ids": [...]}  ->  {"gen_ids": [...], "enc_ms", "tok_ms", "p
 GET  /api/status                   ->  uptime, memory, boot self-tests
 ```
 
-`demos/ask.py` is the worked example — build a prompt, send ids, decode, run
+`demos/ask.py` is the worked example: build a prompt, send ids, decode, run
 the call. `web/needle.js` is the same in JavaScript. To build the firmware
 without the web UI: `idf.py menuconfig` → Needle → serve web demo → off.
 
 ## Teaching it your own tools
 
-The stock model routes unfamiliar tools unreliably — it is 26M parameters. A
-fine-tune fixes it, takes minutes on one GPU, and `tools/finetune.sh` drives
-the whole loop; see [`docs/finetuning.md`](docs/finetuning.md).
+The stock model routes unfamiliar tools unreliably. A fine-tune fixes that
+in minutes on one GPU; `tools/finetune.sh` drives the loop; see [`docs/finetuning.md`](docs/finetuning.md).
 `train/make_dataset.py` generated the shipped demo corpus and reads as a
 template.
 
@@ -134,7 +130,7 @@ template.
 | `train/` | Dataset generator for your own tools. |
 | `test/` | The eight acceptance cases. |
 | `weights/` | Reference oracle files; packed `.npk` artifacts land here (gitignored, fetched via `tools/get_weights.sh`). |
-| `bench/` | Standalone measurements — each subdirectory's README carries its numbers. |
+| `bench/` | Standalone measurements. Each subdirectory's README carries its numbers. |
 | `docs/` | `docs/notebook/` (the engineering log), `docs/finetuning.md`, `docs/HEADS.md`. |
 
 ## Hardware constraints (measured, binding)
@@ -152,8 +148,8 @@ template.
 
 ## Model semantics that break naive ports
 
-All verified against the reference; the first three produce fluent, confident,
-*wrong* output rather than a crash:
+All verified against the reference. The first three produce wrong output rather
+than a crash:
 
 1. Cross-attention gets **no** RoPE; every other attention path does.
 2. Per-head q/k norms come **before** the GQA repeat, before RoPE.
