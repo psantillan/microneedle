@@ -32,7 +32,7 @@ jobs:
           #   https://github.com/OWNER/REPO/releases/download/v0.1.0
           # Until that exists, this step fails on a clean runner (by design).
           # Locally: ./tools/get_weights.sh --from-dir /path/to/npks
-          RELEASES_BASE_URL: "https://github.com/TODO-OWNER/TODO-REPO/releases/download/TODO-TAG"
+          RELEASES_BASE_URL: "https://github.com/psantillan/microneedle/releases/download/v1.0.0"
         run: |
           export RELEASES_BASE_URL="${RELEASES_BASE_URL}"
           ./tools/get_weights.sh

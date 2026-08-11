@@ -74,14 +74,14 @@ to load with the host engine.
 
 | Artifact | Download URL |
 |---|---|
-| `needle_v3_g512.npk` | **TODO-RELEASE-URL** |
-| `needle_tools_g512.npk` | **TODO-RELEASE-URL** |
-| `needle_runa_g512.npk` | **TODO-RELEASE-URL** |
-| `needle_v2_int4p_int8e.npk` | **TODO-RELEASE-URL** |
-| `needle_int4p_int8e.npk` | **TODO-RELEASE-URL** |
-| `needle_int8p_int8e.npk` | **TODO-RELEASE-URL** |
+| `needle_v3_g512.npk` | https://github.com/psantillan/microneedle/releases/download/v1.0.0 |
+| `needle_tools_g512.npk` | https://github.com/psantillan/microneedle/releases/download/v1.0.0 |
+| `needle_runa_g512.npk` | https://github.com/psantillan/microneedle/releases/download/v1.0.0 |
+| `needle_v2_int4p_int8e.npk` | https://github.com/psantillan/microneedle/releases/download/v1.0.0 |
+| `needle_int4p_int8e.npk` | https://github.com/psantillan/microneedle/releases/download/v1.0.0 |
+| `needle_int8p_int8e.npk` | https://github.com/psantillan/microneedle/releases/download/v1.0.0 |
 
-Replace each **TODO-RELEASE-URL** with the concrete GitHub Release asset link
+Replace each https://github.com/psantillan/microneedle/releases/download/v1.0.0 with the concrete GitHub Release asset link
 when the first public release is published. Until then, build packs locally
 with `tools/pack_npk.py` (and `verify.sh --pack` for the base artifact) if
 you already have an upstream checkpoint.

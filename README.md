@@ -1,7 +1,7 @@
 # MicroNeedle
 
 ![The demo, board-served: type a weather question, the on-device 26M model returns the tool call, and the browser fills a live weather card from wttr.in — tokenizing, tool retrieval and tool execution stay in the browser](docs/demo.gif)
-<!-- TODO-CI-BADGE: ./verify.sh host gates, green on every push -->
+[![verify](https://github.com/psantillan/microneedle/actions/workflows/verify.yml/badge.svg)](https://github.com/psantillan/microneedle/actions/workflows/verify.yml)
 
 A complete function-calling model answering in ~3 seconds from a ~$40
 microcontroller board that also serves its own demo page. You type a request
@@ -46,7 +46,7 @@ flowchart LR
 Needs `cc`/`make` and Python 3 with numpy; `node` for the tokenizer gate.
 
 ```
-git clone <this repo> && cd <repo-dir>
+git clone https://github.com/psantillan/microneedle && cd microneedle
 tools/get_weights.sh                 # fetch + sha256-verify the .npk artifacts (see WEIGHTS.md)
 ./verify.sh                          # every host-side gate
 python3 demos/ask.py "What's the weather in Oslo?"

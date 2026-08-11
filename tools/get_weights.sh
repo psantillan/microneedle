@@ -63,10 +63,7 @@ fetch_one() {
     fi
     cp -f "$from_dir/$name" "$dest"
   else
-    local base="${RELEASES_BASE_URL:-https://github.com/TODO-OWNER/TODO-REPO/releases/download/TODO-TAG}"
-  case "$base" in *TODO-OWNER*)
-    echo "release not published yet: set RELEASES_BASE_URL, or use --from-dir DIR (see WEIGHTS.md)" >&2
-    exit 1;; esac
+    local base="${RELEASES_BASE_URL:-https://github.com/psantillan/microneedle/releases/download/v1.0.0}"
     base="${base%/}"
     echo "    GET $base/$name"
     curl -fsSL -o "$dest" "$base/$name" || {
